@@ -20,7 +20,7 @@
             var is_teller_turn = false;  
             var num_peaks_left = "?";
             var turn_idx = 0;
-            var minimum_turns_to_finish_game = 7; // UPDATE ME
+            var minimum_turns_to_finish_game = 0; // UPDATE ME
             var is_game_finished = false;
             var max_number_of_characters = 275;
             var score = 0;
@@ -141,6 +141,10 @@
                     if (confirm("Are you sure you want to finish the game?")) {
                         socket.emit('finish_game', {'game_id':game_id, 'email':email, 'user_type':'Teller'});
                     }
+                });
+
+                document.getElementById('next_game').addEventListener('mouseup', () => {
+                    window.location.href = '/';
                 });
             });
         </script>

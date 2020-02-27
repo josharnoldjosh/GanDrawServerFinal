@@ -132,6 +132,10 @@
                         },
                     });
                 });
+
+                document.getElementById('next_game').addEventListener('mouseup', () => {
+                    window.location.href = '/';
+                });
             });
         </script>
 
@@ -222,7 +226,7 @@
                     <b>Target image:</b>
                     <img id="target_image" style="width: 350px; height: 350px; margin: 5px; display: none;">      
                     <p id="score">Score achieved: 0</p>
-                    <button id="next_game" class="large-button">Next Game</button>
+                    <button id="next_game" class="large-button">New Game</button>
                 </div>
                 
                 <input type="text" id="textfield_input" class="textfield"> 
