@@ -34,18 +34,18 @@
                 };
 
                 document.getElementById('join_game').addEventListener('mouseup', () => {
-                    document.getElementById('join_game').disabled = true;         
-                    document.getElementById('resume_game').disabled = true;             
-                    document.getElementById('join_game').innerHTML = "Loading..."
+                    // document.getElementById('join_game').disabled = true;         
+                    // document.getElementById('resume_game').disabled = true;             
+                    // document.getElementById('join_game').innerHTML = "Loading..."
                     load_data();
                     socket.emit('find_game', {'unique_request':unique_request, 'email':email, 'user_type':user_type})
                 }); 
 
 
                 document.getElementById('resume_game').addEventListener('mouseup', () => {
-                    document.getElementById('join_game').disabled = true;                                    
-                    document.getElementById('resume_game').disabled = true;                    
-                    document.getElementById('resume_game').innerHTML = "Loading..."
+                    // document.getElementById('join_game').disabled = true;                                    
+                    // document.getElementById('resume_game').disabled = true;                    
+                    // document.getElementById('resume_game').innerHTML = "Loading..."
                     load_data();
                     socket.emit('resume_game', {'unique_request':unique_request, 'email':email, 'user_type':user_type})
                 }); 
