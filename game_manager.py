@@ -188,10 +188,7 @@ class GameManager:
 
         # calc score
         results = Score().calc(ground_truth, image)
-
-        print(results)        
-
-        return 0
+        return results['co_draw']
 
 
 

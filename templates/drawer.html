@@ -20,6 +20,7 @@
             var drawer_uploaded_images = false
             var target_image;
             var is_game_finished = false;
+            var score = 0;
 
             var socket;
             $(document).ready(function() {
@@ -38,12 +39,23 @@
                 socket.on('connect', function() {
                     socket.emit('join_game', {'game_id':game_id});          
                     socket.emit('get_game_data', {'game_id':game_id, 'user_type':'Drawer'});             
-                });        
+                });       
+
+                function finish_game() {                                                     
+                    document.getElementById('send_message').style.display = "none";                                                    
+                    document.getElementById('upload-images').style.display = "none";
+                    document.getElementById('textfield_input').style.display = "none";
+                    document.getElementById('title').innerHTML = "Game Finished";     
+                    document.getElementById('target_image').style.display = "block"; 
+                    document.getElementById('end_game_pane').style.display = 'block';              
+                    document.getElementById('target_image').src = target_image;                                    
+                }; 
 
                 // Update the stat of the Drawer (whether they are idle or active)
                 function update_state() {
                     document.getElementById("send_message").disabled = !is_drawer_turn || !drawer_uploaded_images;
                     document.getElementById("textfield_input").disabled = !is_drawer_turn || !drawer_uploaded_images;
+                    document.getElementById('score').innerHTML = "Score achieved: " + score.toFixed(2) + "/5";
 
                     if (is_drawer_turn == true && drawer_uploaded_images == true) {
                         document.getElementById('send_message').innerHTML = "Send message";   
@@ -62,16 +74,6 @@
                     }
                 };
 
-                function finish_game() {                                                     
-                    document.getElementById('send_message').style.display = "none";                                                    
-                    document.getElementById('upload-images').style.display = "none";
-                    document.getElementById('textfield_input').style.display = "none";
-                    document.getElementById('title').innerHTML = "Game Finished";     
-                    document.getElementById('target_image').style.display = "block"; 
-                    document.getElementById('end_game_pane').style.display = 'block';              
-                    document.getElementById('target_image').src = target_image;
-                };
-
                 socket.on('game_data', function(data) {
                     document.getElementById("chat").value = data['text'].replace(/Drawer/gi, "You");
                     document.getElementById("chat").scrollTop = document.getElementById("chat").scrollHeight;                        
@@ -79,7 +81,7 @@
                     drawer_uploaded_images = data['drawer_uploaded_images'];  
                     is_game_finished = data['is_game_finished'];
                     target_image = data['target_image_and_label']['target_image'];
-
+                    score = data['score'];
                     update_state();                
                 });       
 
@@ -218,7 +220,7 @@
                 <div id="end_game_pane" style="display: none; margin-top: 25px;">
                     <b>Target image:</b>
                     <img id="target_image" style="width: 350px; height: 350px; margin: 5px; display: none;">      
-                    <p>Score achieved: 0</p>
+                    <p id="score">Score achieved: 0</p>
                     <button id="next_game" class="large-button">Next Game</button>
                 </div>
                 
@@ -227,16 +229,15 @@
             </div>
 
             <form id="upload-images" method="post" enctype="multipart/form-data" class="pane-left">  
-                <div class="extra-space">
-                    <label for="target_label">Input (gaugan_input.png)</label>
-                    <input type="file" id="target_label" name="target_label" accept="image/*">                        
-                </div>                      
-                
                 <div class="extra-space">                                        
                     <label for="target_image">Output (gaugan_output.jpg)</label>
                     <input type="file" id="target_image" name="target_image" accept="image/*">
                 </div>
 
+                <div class="extra-space">
+                    <label for="target_label">Input (gaugan_input.png)</label>
+                    <input type="file" id="target_label" name="target_label" accept="image/*">                        
+                </div>                                      
                 <input id="upload-images-button" type="submit" class="small-button" value="Upload">
             </form>   
         </div>             

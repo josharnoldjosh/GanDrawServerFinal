@@ -1,18 +1,19 @@
 import numpy as np
 from scipy import ndimage
+from itertools import permutations
 
 class Score:
     def calc(self, ground_truth_image, drawer_image):        
         if ground_truth_image[0][0] == 1 or ground_truth_image.shape != drawer_image.shape:
             print("SHAPES NOT EQUAL OR IMAGE DOES NOT EXIST")
-            return {"pixel_acc":0, "mean_acc":0, "mean_iou":0}    
+            return {"pixel_acc":0, "mean_acc":0, "mean_iou":0, "co_draw":0}
 
-        pixel_accuracy = self.pixel_accuracy(ground_truth_image, drawer_image, 182)     
-        mean_accuracy = self.mean_accuracy(ground_truth_image, drawer_image, 182)
-        mean_IoU = self.mean_IoU(ground_truth_image, drawer_image, 182)     
+        # pixel_accuracy = self.pixel_accuracy(ground_truth_image, drawer_image, 182)     
+        # mean_accuracy = self.mean_accuracy(ground_truth_image, drawer_image, 182)
+        # mean_IoU = self.mean_IoU(ground_truth_image, drawer_image, 182)     
         co_draw_metric = self.gaugancodraw_eval_metrics(drawer_image, ground_truth_image, 182)        
 
-        return {"pixel_acc":pixel_accuracy, "mean_acc":mean_accuracy, "mean_iou":mean_IoU, "co_draw":co_draw_metric}
+        return {"pixel_acc":0, "mean_acc":0, "mean_iou":0, "co_draw":co_draw_metric}
 
     def _fast_hist(self, label_true, label_pred, n_class):
         mask = (label_true >= 0) & (label_true < n_class)

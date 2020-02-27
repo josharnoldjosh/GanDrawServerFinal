@@ -17,15 +17,14 @@
             // Load variables
             var game_id = '{{ game_id }}';             
             var email = '{{ email }}';
-
             var is_teller_turn = false;  
             var num_peaks_left = "?";
             var turn_idx = 0;
             var minimum_turns_to_finish_game = 1; // UPDATE ME
-
             var is_game_finished = false;
-
+            var score = 0;
             var socket;
+
             $(document).ready(function() {
 
                 document.getElementById("send_message").disabled = true;
@@ -49,21 +48,18 @@
                     document.getElementById('peek_button').style.display = "none";                    
                     document.getElementById('send_message').style.display = "none";                    
                     document.getElementById('finish_game').style.display = "none"; 
-                    document.getElementById('textfield_input').style.display = "none";                   
+                    document.getElementById('textfield_input').style.display = "none"; 
+                    document.getElementById('title').innerHTML = "Game Finished";     
+                    document.getElementById('end_game_pane').style.display = 'block';             
                 };
 
                 // Update the stat of the Drawer (whether they are idle or active)
-                function update_state() {         
-
-                    if (is_game_finished == true) {
-                        finish_game();
-                        return;
-                    };
-
+                function update_state() {                         
                     document.getElementById("chat").scrollTop = document.getElementById("chat").scrollHeight;                                        
                     document.getElementById("send_message").disabled = !is_teller_turn;
                     document.getElementById("textfield_input").disabled = !is_teller_turn;
                     document.getElementById('peek_button').innerHTML = "Peek (" + String(num_peaks_left) + ")";   
+                    document.getElementById('score').innerHTML = "Score achieved: " + score.toFixed(2) + "/5";                    
 
                     if (is_teller_turn == true) {
                         document.getElementById('send_message').innerHTML = "Send message";   
@@ -72,6 +68,11 @@
                         document.getElementById('send_message').innerHTML = "Waiting for Drawer...";
                         document.getElementById("send_message").style.background='#3498db';
                     }
+
+                    if (is_game_finished == true) {
+                        finish_game();
+                        return;
+                    };
                 };
 
                 function update_parameters(data) {
@@ -83,6 +84,7 @@
                     num_peaks_left = data['num_peaks_left'];
                     turn_idx = Math.max(data['turn_idx'], turn_idx);
                     is_game_finished = data['is_game_finished'];
+                    score = data['score'];
                 };
 
                 socket.on('game_data', function(data) {                                                            
@@ -195,7 +197,7 @@
                 font-size: 16px;
                 font-weight: 100;
                 color: #3498db;
-                text-align: center;
+                /*text-align: center;*/
                 width: 500px;
             }
 
@@ -223,10 +225,11 @@
     <body>
 
         <div class="container">
+            <h1 id="title" class="title">Chat interface</h1>
 
-            <div class="pane-left">
+            <div class="pane-left">                
                 <img id="target_image" style="width: 350px; height: 350px; margin: 5px;">  
-                <img id="target_label" style="width: 350px; height: 350px; margin: 5px;">  
+                <img id="target_label" style="width: 450px; height: 350px; margin: 5px;">  
                 <img id="peek" style="width: 350px; height: 350px; margin: 5px;">            
             </div>
 
@@ -236,6 +239,11 @@
                 <button id="send_message" class="large-button">Connecting...</button> 
                 <button id="peek_button" class="large-button" style="background-color: #fc6603;">Peek (?)</button>
                 <button id="finish_game" class="large-button" style="background-color: #9342f5;">Finish Game</button> 
+
+                <div id="end_game_pane" style="display: none; margin-top: 25px;">                                    
+                    <p id="score">Score achieved: 0</p>
+                    <button id="next_game" class="large-button">Next Game</button>
+                </div>                
             </div>
         </div>    
     </body>
