@@ -201,27 +201,20 @@ class GameManager:
         return str(uuid4())[:4]
 
     @classmethod
-    def find_game(self, email, user_type):
-
-        # ensure valid email
-        email = email.split('@')[0]
-        if len(email) < 1: return '/error'
-
-        # Load, filter and sort games
+    def load_games(self):        
         all_games = os.listdir(os.path.join(os.getcwd(), 'data/games/'))
         all_games = [os.path.join(os.getcwd(), 'data/games', x) for x in all_games]
         all_games = [x for x in all_games if os.path.isdir(x)]
         all_games = sorted(all_games, key=lambda text:GameManager.extract_idx(text))
+        return all_games
+
+    @classmethod
+    def find_game(self, email, user_type):        
+        email = email.split('@')[0]
+        if len(email) < 1: return '/error'
         
-        # Iterate over games
-        for game_id in all_games:
-
-            print(game_id)
-
-            # Load values
-            is_finished = GameManager.read_flags(game_id, "finished")
-            # drawer = GameManager.read_flags(game_id, "drawer_email").lower()
-            # teller = GameManager.read_flags(game_id, "teller_email").lower()
+        for game_id in GameManager.load_games():
+            is_finished = GameManager.read_flags(game_id, "finished")            
             has_drawer = GameManager.read_flags(game_id, "drawer_connected")
             has_teller = GameManager.read_flags(game_id, "teller_connected")
 
@@ -234,7 +227,25 @@ class GameManager:
         return "/complete"
 
 
-    # @classmethod
-    # def find_unfinished
+    @classmethod
+    def resume_game(self, email, user_type):
+        # ensure valid email
+        email = email.split('@')[0]
+        if len(email) < 1: return '/error'
+
+        # Iterate over games
+        for game_id in GameManager.load_games():
+            is_finished = GameManager.read_flags(game_id, "finished")
+            drawer_email = GameManager.read_flags(game_id, "drawer_email").lower()
+            teller_email = GameManager.read_flags(game_id, "teller_email").lower()            
+
+            # If we haven't finished the game and we match an email
+            if not is_finished and drawer_email == email:
+                return '/' + email + "/" + game_id.split('/')[-1] + "/drawer"
+
+            if not is_finished and teller_email == email:
+                return '/' + email + "/" + game_id.split('/')[-1] + "/teller"            
+
+        return "/unfinished"
 
 

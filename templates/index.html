@@ -34,19 +34,25 @@
                 };
 
                 document.getElementById('join_game').addEventListener('mouseup', () => {
-                    document.getElementById('join_game').disabled = true;                    
+                    document.getElementById('join_game').disabled = true;         
+                    document.getElementById('resume_game').disabled = true;             
                     document.getElementById('join_game').innerHTML = "Loading..."
                     load_data();
                     socket.emit('find_game', {'unique_request':unique_request, 'email':email, 'user_type':user_type})
                 }); 
 
-                socket.on('go_to_game', function(data) {
-                    document.getElementById('join_game').disabled = false;                    
-                    document.getElementById('join_game').innerHTML = "Done";
-                    window.location.href = data['href'];
-                });
 
-                   
+                document.getElementById('resume_game').addEventListener('mouseup', () => {
+                    document.getElementById('join_game').disabled = true;                                    
+                    document.getElementById('resume_game').disabled = true;                    
+                    document.getElementById('resume_game').innerHTML = "Loading..."
+                    load_data();
+                    socket.emit('resume_game', {'unique_request':unique_request, 'email':email, 'user_type':user_type})
+                }); 
+
+                socket.on('go_to_game', function(data) {                                    
+                    window.location.href = data['href'];
+                });            
             });
         </script>
 
@@ -112,6 +118,7 @@
 
                 <button id="join_game" class="button-large">Join Game</button>
 
+                <button id="resume_game" class="button-large">Resume Game</button>
             </div>
         </div>
     </body>

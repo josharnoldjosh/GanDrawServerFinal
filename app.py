@@ -41,6 +41,10 @@ def upload_drawer_images(game_id):
 def finished_data_collection():
     return "There are no more games to join at this time."
 
+@app.route('/unfinished')
+def cannot_find_unfinished_game():
+    return "There are no unfinished games found for your email. Please try join a new game."
+
 @app.route('/error')
 def error():
     return "Uh oh. Something went wrong. Please try again!"
@@ -51,6 +55,13 @@ def find_game(message):
     user_type = message["user_type"].lower()
     message["href"] = GM.find_game(email, user_type)
     emit('go_to_game', message)
+
+@socketio.on('resume_game')
+def resume_game(message):
+    email = message["email"].lower()
+    user_type = message["user_type"].lower()
+    message["href"] = GM.resume_game(email, user_type)
+    emit('go_to_game', message)    
 
 @socketio.on('join_game')  
 def join_game(message):    
