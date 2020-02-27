@@ -1,0 +1,244 @@
+<html>
+    <head>
+        <title>Teller</title>
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css">
+        <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        
+        <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular.min.js"></script>
+
+        <script type="text/javascript" charset="utf-8">
+
+            // Load variables
+            var game_id = '{{ game_id }}';             
+            var email = '{{ email }}';
+
+            var is_teller_turn = false;  
+            var num_peaks_left = "?";
+            var turn_idx = 0;
+            var minimum_turns_to_finish_game = 1; // UPDATE ME
+
+            var is_game_finished = false;
+
+            var socket;
+            $(document).ready(function() {
+
+                document.getElementById("send_message").disabled = true;
+                document.getElementById("textfield_input").disabled = true;
+                
+                var ext = 'http://';            
+
+                socket = io.connect(ext + document.domain + ':' + location.port);    
+
+                socket.on('disconnect', function() {                
+                    socket.emit('leave_game', {'game_id':game_id});                    
+                });       
+
+                socket.on('connect', function() {
+                    socket.emit('join_game', {'game_id':game_id});                    
+                    socket.emit('get_game_data', {'game_id':game_id, 'user_type':'Teller'}); 
+                });       
+                
+                // Tear down this game
+                function finish_game() {
+                    document.getElementById('peek_button').style.display = "none";                    
+                    document.getElementById('send_message').style.display = "none";                    
+                    document.getElementById('finish_game').style.display = "none"; 
+                    document.getElementById('textfield_input').style.display = "none";                   
+                };
+
+                // Update the stat of the Drawer (whether they are idle or active)
+                function update_state() {         
+
+                    if (is_game_finished == true) {
+                        finish_game();
+                        return;
+                    };
+
+                    document.getElementById("chat").scrollTop = document.getElementById("chat").scrollHeight;                                        
+                    document.getElementById("send_message").disabled = !is_teller_turn;
+                    document.getElementById("textfield_input").disabled = !is_teller_turn;
+                    document.getElementById('peek_button').innerHTML = "Peek (" + String(num_peaks_left) + ")";   
+
+                    if (is_teller_turn == true) {
+                        document.getElementById('send_message').innerHTML = "Send message";   
+                        document.getElementById("send_message").style.background='#34e054';                
+                    }else{
+                        document.getElementById('send_message').innerHTML = "Waiting for Drawer...";
+                        document.getElementById("send_message").style.background='#3498db';
+                    }
+                };
+
+                function update_parameters(data) {
+                    document.getElementById("chat").value = data['text'].replace(/Teller/gi, "You");
+                    document.getElementById('target_image').src = data['target_image_and_label']['target_image'];                   
+                    document.getElementById('target_label').src = data['target_image_and_label']['target_label'];
+                    document.getElementById('peek').src = data['peek_image'];
+                    is_teller_turn = !data['is_drawer_turn'];
+                    num_peaks_left = data['num_peaks_left'];
+                    turn_idx = Math.max(data['turn_idx'], turn_idx);
+                    is_game_finished = data['is_game_finished'];
+                };
+
+                socket.on('game_data', function(data) {                                                            
+                    update_parameters(data);
+                    update_state();
+                });  
+                
+                document.getElementById('send_message').addEventListener('mouseup', () => {                                     
+                    var txt = document.getElementById('textfield_input').value;
+
+                    function send_message() {
+                        document.getElementById('send_message').innerHTML = "Sending...";   
+                        socket.emit('send_message', {'text':txt, 'game_id':game_id, 'user_type':'Teller'});  
+                    };
+        
+                    if (txt.length < 250 && txt.length > 2) {
+                        document.getElementById('textfield_input').value = "";
+                        document.getElementById("send_message").disabled = true;
+                        document.getElementById("textfield_input").disabled = true;
+                        send_message(txt)                                   
+                    }else if (txt.length > 250) {
+                        alert("Your message is too long!");
+                    }else{
+                        alert("Your message is too short!");
+                    }                    
+                });
+
+                // peek
+                document.getElementById('peek_button').addEventListener('mouseup', () => {                      
+                    // alert(turn_idx);
+
+                    if (turn_idx < 1) {
+                        alert("Sorry! It's too early in the game to peek!");                        
+                        return;
+                    }
+
+                    if (num_peaks_left <= 0) {
+                        alert("Sorry! You don't have any more peeks left!");
+                        return;
+                    };
+ 
+                    if ( confirm("Are you sure you want to peek?") ) {
+                        socket.emit('peek', {'game_id':game_id, 'user_type':'Teller'});
+                    }
+                });
+
+                document.getElementById('finish_game').addEventListener('mouseup', () => {
+                    if (turn_idx < minimum_turns_to_finish_game) {
+                        alert('Sorry, please complete at least 7 turns of dialog before you can finish the game!');
+                        return;
+                    };
+
+                    finish_game = confirm("Are you sure you want to finish the game?");
+
+                    if (finish_game) {
+                        socket.emit('finish_game', {'game_id':game_id, 'user_type':'Teller'});
+                    }
+                });
+            });
+        </script>
+
+        <style type="text/css">
+            .container {
+                margin-top: 25px;
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                justify-content: center;
+                align-content: center;
+                flex-wrap: wrap;
+            }
+
+            .pane-left {
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+            }
+
+            .pane-right {
+                display: flex;
+                align-content: center;
+                justify-content: center;
+                align-items: center;
+                flex-direction: column;
+            }
+
+            .small-button {
+                margin-top: 20px;
+                width: 120px;
+                background-color: #3498db;
+                height: 35px;
+                text-decoration-color: white;
+                color: white;
+                border-radius: 7px;
+                font-family: monospace;
+                font-size: 15px;
+            }
+
+            .large-button {
+                margin: 5px;
+                height: 40px;
+                width: 500px;
+                background-color: #3498db;
+                text-decoration-color: white;
+                color: white; border-radius: 7px;
+                font-family: monospace;
+                font-size: 16px;
+            }
+
+            .title {
+                font-family: monospace;
+                font-size: 16px;
+                font-weight: 100;
+                color: #3498db;
+                text-align: center;
+                width: 500px;
+            }
+
+            .chat-pane {
+                width: 500px;
+                height: 400px;
+                margin: 5px;
+                font-size: 18px;
+                font-family: monospace;
+            }
+
+            .textfield {
+                margin: 5px;
+                height: 30px;
+                width: 500px;
+            }
+
+            .extra-space {
+                margin-top: 20px;
+            }
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="container">
+
+            <div class="pane-left">
+                <img id="target_image" style="width: 350px; height: 350px; margin: 5px;">  
+                <img id="target_label" style="width: 350px; height: 350px; margin: 5px;">  
+                <img id="peek" style="width: 350px; height: 350px; margin: 5px;">            
+            </div>
+
+            <div class="pane-right">                
+                <textarea id="chat" class="chat-pane"></textarea> 
+                <input type="text" id="textfield_input" class="textfield"> 
+                <button id="send_message" class="large-button">Connecting...</button> 
+                <button id="peek_button" class="large-button" style="background-color: #fc6603;">Peek (?)</button>
+                <button id="finish_game" class="large-button" style="background-color: #9342f5;">Finish Game</button> 
+            </div>
+        </div>    
+    </body>
+</html>

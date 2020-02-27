@@ -1,0 +1,1 @@
+{"dialog": [{"text": "Hello world", "user_type": "Teller", "turn_idx": 0}, {"text": "Continue", "user_type": "Drawer", "turn_idx": 0}, {"text": "Hello", "user_type": "Teller", "turn_idx": 1}, {"text": "done", "user_type": "Drawer", "turn_idx": 1}]}

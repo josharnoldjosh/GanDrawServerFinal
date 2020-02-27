@@ -1,0 +1,128 @@
+<html>
+    <head>
+        <title>Flask demo</title>
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css">
+        <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        
+        <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+
+        <style type="text/css">
+
+            .container {
+                display: flex;
+                flex-direction: column;
+                width: 900px;
+            }
+
+            .text-container {
+                display: flex;
+                flex-direction: column;                   
+                justify-content: space-around;   
+                padding: 20px;             
+            }
+
+            .row {
+                display: flex;
+                flex-direction: row;                
+                justify-content: space-between;
+                font-size: 17px;
+            }
+
+            .spacer {
+                height: 250px;
+            }
+
+            img {
+                height: 200px;
+                width: 200px;
+                padding-bottom: 5px;
+            }
+        </style>
+
+        <script type="text/javascript" charset="utf-8">
+            var socket;
+            $(document).ready(function() {
+
+                socket = io.connect('http://' + document.domain + ':' + location.port);
+
+                socket.on('connect', function() {
+                    socket.emit('view_data', {}); 
+                });
+
+                
+                socket.on('all_data', function(data) {     
+
+                                  
+                    function createImage(path) {
+                        var img = document.createElement('img'); 
+                        img.src = path;
+                        return img;
+                    }
+
+                    function createBreak() {
+                        var spacer = document.createElement('div'); 
+                        spacer.className = "spacer";
+                        return spacer;
+                    }
+
+                    function text(str) {
+                        var t = document.createTextNode(str);
+                        return t;
+                    }
+            
+                    function textColumn(teller, drawer) {
+                        var cont = document.createElement('div');
+                        cont.className = 'text-container';
+
+                        cont.appendChild(text(teller));
+                        cont.appendChild(document.createElement('br'));
+                        cont.appendChild(document.createElement('br'));
+                        cont.appendChild(text(drawer));
+
+                        return cont;
+                    }
+
+                    function processConvo(convo) {                
+                        target_image_path = convo["target_image"];
+                        synthetic_images = convo["synthetic_images"];
+                        utt = convo["utt"];         
+                                        
+                        for (i = 0; i < synthetic_images.length; i++) {
+                            var row = document.createElement('div');   
+                            row.className = "row";
+
+                            row.appendChild(createImage(target_image_path));
+
+                            var teller = utt.pop();
+                            var drawer = utt.pop();
+
+                            row.appendChild(textColumn(teller, drawer));
+
+                            row.appendChild(createImage(synthetic_images[i]));
+
+                            document.getElementById("container").appendChild(row);                        
+                        }                    
+
+                        document.getElementById("container").appendChild(createBreak()); 
+                    }
+
+                    data["data"].forEach(processConvo);
+                });
+                           
+            });
+        </script>
+
+    </head>
+    <body>
+
+        <div class="container" id="container">
+            
+        </div>
+            
+    </body>
+</html>
