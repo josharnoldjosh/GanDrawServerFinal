@@ -58,6 +58,12 @@
                     document.getElementById("textfield_input").disabled = !is_drawer_turn || !drawer_uploaded_images;
                     document.getElementById('score').innerHTML = "Score achieved: " + score.toFixed(2) + "/5";
 
+                    if (!is_drawer_turn) {                        
+                        document.getElementById('upload-images-button').disabled = true;
+                    }else{
+                        document.getElementById('upload-images-button').disabled = false;
+                    }
+
                     if (is_drawer_turn == true && drawer_uploaded_images == true) {
                         document.getElementById('send_message').innerHTML = "Send message";   
                         document.getElementById("send_message").style.background='#34e054';
