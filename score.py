@@ -52,13 +52,9 @@ GAUGAN2LABEL = {
 # }
 
 def convert_GAUGAN2MASK(gaugan_image):
-    label_masks = np.zeros((gaugan_image.shape[0], gaugan_image.shape[1]), dtype='uint8')
-    #print(label_masks.shape)
-    #label_index = np.where(np.all(drawer_raw == np.array([221, 238, 156]), axis=-1))
+    label_masks = np.zeros((gaugan_image.shape[0], gaugan_image.shape[1]), dtype='uint8')    
     for label, gaugan_info in GAUGAN2LABEL.items():
-        label_index = np.where(np.all(gaugan_image == gaugan_info['color'], axis=-1))
-        # if label_index.size:
-        #     print(gaugan_info["name"])
+        label_index = np.where(np.all(gaugan_image == gaugan_info['color'], axis=-1))        
         if label_index[0].size > 0:
             label_masks[label_index] = label
     return label_masks
@@ -68,12 +64,7 @@ class Score:
         if ground_truth_image[0][0] == 1 or ground_truth_image.shape != drawer_image.shape:
             print("SHAPES NOT EQUAL OR IMAGE DOES NOT EXIST")
             return {"pixel_acc":0, "mean_acc":0, "mean_iou":0, "co_draw":0}
-
-        # pixel_accuracy = self.pixel_accuracy(ground_truth_image, drawer_image, 182)     
-        # mean_accuracy = self.mean_accuracy(ground_truth_image, drawer_image, 182)
-        # mean_IoU = self.mean_IoU(ground_truth_image, drawer_image, 182)     
         co_draw_metric = self.gaugancodraw_eval_metrics(drawer_image, ground_truth_image, 182)        
-
         return {"pixel_acc":0, "mean_acc":0, "mean_iou":0, "co_draw":co_draw_metric}
 
     def _fast_hist(self, label_true, label_pred, n_class):
@@ -325,27 +316,3 @@ class Score:
             i += sliding_size
             j = 0
         return sample_matrix
-
-
-if __name__ == "__main__":
-    print("Debug the scorer")
-
-    #Load the image
-    drawer_raw = cv2.imread('semantic_image_3.png')
-    
-    label_masks = convert_GAUGAN2MASK(drawer_raw)
-    print(np.unique(label_masks))
-    print(label_masks.shape)
-
-    target_raw = cv2.imread('target_label.png', cv2.IMREAD_GRAYSCALE)[:512, :512]
-    print(np.unique(target_raw))
-
-    score_class = Score()
-    score = score_class.calc(target_raw, label_masks)
-    print(score)
-
-    # drawer_raw_2 = cv2.imread('gaugan_input_1.png', cv2.IMREAD_GRAYSCALE)
-    # print(drawer_raw_2[0,0])
-
-    # target_raw = cv2.imread('target_label.png', cv2.IMREAD_GRAYSCALE)
-    # print(np.unique(target_raw))

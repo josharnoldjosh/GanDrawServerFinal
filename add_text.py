@@ -63,19 +63,8 @@ def PutingText2Mask(mask):
     v_location  = mask_w // 10
     for l in labels:
     	label_name = LABEL2COLOR[l]["name"]
-    	label_color = (int(LABEL2COLOR[l]["color"][0]), int(LABEL2COLOR[l]["color"][1]), int(LABEL2COLOR[l]["color"][2]))
-    	print(label_color)
+    	label_color = (int(LABEL2COLOR[l]["color"][0]), int(LABEL2COLOR[l]["color"][1]), int(LABEL2COLOR[l]["color"][2]))    	
     	cv2.putText(back_ground, label_name, (mask_w + 25, v_location),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.7, label_color, 2, cv2.LINE_AA)
     	v_location += mask_w // 10
-
     return back_ground
-
-# gt_mask = cv2.imread(os.path.join(GT_MASKS_DIR, GT_MASKS_NAME))
-# text_mask = PutingText2Mask(gt_mask)
-
-# cv2.namedWindow("GroundTruth Masks")
-# cv2.imshow('GT Mask', text_mask)
-# cv2.waitKey(0)
-# cv2.destroyAllWindows()
-

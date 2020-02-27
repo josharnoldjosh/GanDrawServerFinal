@@ -139,7 +139,7 @@ class GameManager:
         try:
             return int(re.findall(r'\d+', text)[0])
         except Exception as error:
-            # print("\nError extracting int in 'update_peek_image'\n")
+            print("\nError extracting int in 'update_peek_image'\n", error)
             return 0
 
     @classmethod
