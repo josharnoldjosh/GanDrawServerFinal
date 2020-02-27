@@ -21,6 +21,7 @@
             var target_image;
             var is_game_finished = false;
             var score = 0;
+            var max_number_of_characters = 275;
 
             var socket;
             $(document).ready(function() {
@@ -33,12 +34,12 @@
                 socket = io.connect(ext + document.domain + ':' + location.port);
 
                 socket.on('disconnect', function() {                
-                    socket.emit('leave_game', {'game_id':game_id});                    
+                    socket.emit('leave_game', {'game_id':game_id, 'user_type':'Drawer', 'email':email});                    
                 });   
 
                 socket.on('connect', function() {
-                    socket.emit('join_game', {'game_id':game_id});          
-                    socket.emit('get_game_data', {'game_id':game_id, 'user_type':'Drawer'});             
+                    socket.emit('join_game', {'game_id':game_id, 'user_type':'Drawer', 'email':email});          
+                    socket.emit('get_game_data', {'game_id':game_id, 'user_type':'Drawer', 'email':email});             
                 });       
 
                 function finish_game() {                                                     
@@ -88,13 +89,13 @@
                 // Handle sending a message
                 document.getElementById('send_message').addEventListener('mouseup', () => {
                     function send_message(txt) {                  
-                        if (txt.length < 250 && txt.length > 2) {
+                        if (txt.length < max_number_of_characters && txt.length > 2) {
                             document.getElementById('textfield_input').value = "";
                             document.getElementById("send_message").disabled = true;
                             document.getElementById("textfield_input").disabled = true;
                             document.getElementById('send_message').innerHTML = "Sending...";   
-                            socket.emit('send_message', {'text':txt, 'game_id':game_id, 'user_type':'Drawer'});
-                        }else if (txt.length > 250) {
+                            socket.emit('send_message', {'text':txt, 'game_id':game_id, 'user_type':'Drawer', 'email':email});
+                        }else if (txt.length > max_number_of_characters) {
                             alert("Your message is too long!");
                         }else{
                             alert("Your message is too short!");
@@ -124,7 +125,7 @@
 
                             if (data == "success") {                                
                                 // Refresh our game data!                                
-                                socket.emit('get_game_data', {'game_id':game_id, 'user_type':'Drawer'}); 
+                                socket.emit('get_game_data', {'game_id':game_id, 'user_type':'Drawer', 'email':email}); 
                             }else{
                                 alert("Please re-upload your images! (Make sure you are uploading the right images)")
                             }                            

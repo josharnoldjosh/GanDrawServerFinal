@@ -130,23 +130,25 @@ class GameManager:
         return 'data:image/png;base64,'+base64.b64encode(imgByteArr.getvalue()).decode('ascii')
 
     @classmethod
+    def extract_idx(self, text):
+        try:
+            return int(re.findall(r'\d+', text)[0])
+        except Exception as error:
+            # print("\nError extracting int in 'update_peek_image'\n")
+            return 0
+
+    @classmethod
     def get_most_recent_drawer_images(self, game_id):
         path = os.path.join(os.getcwd(), 'data/games/', game_id)
-        def extract_idx(text):
-            try:
-                return int(re.findall(r'\d+', text)[0])
-            except Exception as error:
-                # print("\nError extracting int in 'update_peek_image'\n")
-                return 0
         synthetic = [x for x in os.listdir(path) if 'synthetic_image' in x]
         if len(synthetic) < 1: return {'synthetic':'', 'semantic':''}
-        synthetic = sorted(synthetic, key=lambda x: extract_idx(x), reverse=False)
+        synthetic = sorted(synthetic, key=lambda x: GameManager.extract_idx(x), reverse=False)
         synthetic = synthetic.pop()
         synthetic = os.path.join(os.getcwd(), 'data/games/', game_id, synthetic)
 
         semantic = [x for x in os.listdir(path) if 'semantic_image' in x]
         if len(semantic) < 1: return {'synthetic':'', 'semantic':''}
-        semantic = sorted(semantic, key=lambda x: extract_idx(x), reverse=False)
+        semantic = sorted(semantic, key=lambda x: GameManager.extract_idx(x), reverse=False)
         semantic = semantic.pop()
         semantic = os.path.join(os.getcwd(), 'data/games/', game_id, semantic)
 
@@ -194,5 +196,45 @@ class GameManager:
 
         return results['co_draw']
 
+    @classmethod
+    def unique_request(self):
+        return str(uuid4())[:4]
+
+    @classmethod
+    def find_game(self, email, user_type):
+
+        # ensure valid email
+        email = email.split('@')[0]
+        if len(email) < 1: return '/error'
+
+        # Load, filter and sort games
+        all_games = os.listdir(os.path.join(os.getcwd(), 'data/games/'))
+        all_games = [os.path.join(os.getcwd(), 'data/games', x) for x in all_games]
+        all_games = [x for x in all_games if os.path.isdir(x)]
+        all_games = sorted(all_games, key=lambda text:GameManager.extract_idx(text))
+        
+        # Iterate over games
+        for game_id in all_games:
+
+            print(game_id)
+
+            # Load values
+            is_finished = GameManager.read_flags(game_id, "finished")
+            # drawer = GameManager.read_flags(game_id, "drawer_email").lower()
+            # teller = GameManager.read_flags(game_id, "teller_email").lower()
+            has_drawer = GameManager.read_flags(game_id, "drawer_connected")
+            has_teller = GameManager.read_flags(game_id, "teller_connected")
+
+            # If the game is finished or already has a drawer or teller connected, lets find a different game
+            if is_finished or (user_type == "drawer" and has_drawer) or (user_type == "teller" and has_teller):
+                continue
+
+            return '/' + email + "/" + game_id.split('/')[-1] + "/" + user_type
+
+        return "/complete"
+
+
+    # @classmethod
+    # def find_unfinished
 
 

@@ -9,15 +9,18 @@ socketio = SocketIO(app, logger=True)
 
 @app.route('/')
 def root():
-    """ Send HTML from the server."""
-    return render_template('index.html')
+    return render_template('index.html', unique_request=GM.unique_request())
 
-@app.route('/<email>/<game_id>/<user_type>', methods = ['GET', 'POST'])
+@app.route('/<email>/<game_id>/<user_type>')
 def game(email, game_id, user_type):    
     # TODO: Check if game_id exists with GameManager
     if user_type == "drawer":
+        GM.set_flags(game_id, 'drawer_connected', True)
+        GM.set_flags(game_id, 'drawer_email', email)
         return render_template('drawer.html', game_id=game_id, email=email)
     else:
+        GM.set_flags(game_id, 'teller_connected', True)
+        GM.set_flags(game_id, 'teller_email', email)
         return render_template('teller.html', game_id=game_id, email=email)
 
 @app.route('/<game_id>/upload', methods=['POST'])
@@ -33,6 +36,21 @@ def upload_drawer_images(game_id):
             GM.set_flags(game_id=game_id, key="drawer_uploaded_images", value=True)
             return "success"    
     return 'error'
+
+@app.route('/complete')
+def finished_data_collection():
+    return "There are no more games to join at this time."
+
+@app.route('/error')
+def error():
+    return "Uh oh. Something went wrong. Please try again!"
+
+@socketio.on('find_game')
+def find_game(message):
+    email = message["email"].lower()
+    user_type = message["user_type"].lower()
+    message["href"] = GM.find_game(email, user_type)
+    emit('go_to_game', message)
 
 @socketio.on('join_game')  
 def join_game(message):    

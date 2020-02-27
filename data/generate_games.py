@@ -18,7 +18,19 @@ def make_game(idx, target_image_path, target_label_path):
     os.mkdir(game_path)    
     shutil.copy(target_image_path, os.path.join(game_path, 'target_image.jpg'))
     shutil.copy(target_label_path, os.path.join(game_path, 'target_label.png'))
-    flags = {'finished':False, 'drawer_connected':False, 'teller_connected':False, 'is_drawer_turn':False, 'drawer_uploaded_images':False, 'num_peaks_left':2, 'score':0}
+
+    flags = {
+        'finished':False,
+        'drawer_connected':False,
+        'teller_connected':False,
+        'is_drawer_turn':False,
+        'drawer_uploaded_images':False,
+        'num_peaks_left':2,
+        'score':0,
+        'drawer_email':'',
+        'teller_email':''
+    }
+
     with open(os.path.join(game_path, 'flags.json'), 'w') as file: json.dump(flags, file)    
     dialog = {'dialog':[]}
     with open(os.path.join(game_path, 'dialog.json'), 'w') as file: json.dump(dialog, file)    
