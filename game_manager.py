@@ -207,9 +207,8 @@ class GameManager:
 
     @classmethod
     def load_games(self):        
-        all_games = os.listdir(os.path.join(os.getcwd(), 'data/games/'))
-        all_games = [os.path.join(os.getcwd(), 'data/games', x) for x in all_games]
-        all_games = [x for x in all_games if os.path.isdir(x)]
+        all_games = os.listdir(os.path.join(os.getcwd(), 'data/games/'))        
+        all_games = [x for x in all_games if os.path.isdir(os.path.join(os.getcwd(), 'data/games', x))]
         all_games = sorted(all_games, key=lambda text:GameManager.extract_idx(text))
         return all_games
 
@@ -227,7 +226,7 @@ class GameManager:
             if is_finished or (user_type == "drawer" and has_drawer) or (user_type == "teller" and has_teller):
                 continue
 
-            return '/' + email + "/" + game_id.split('/')[-1] + "/" + user_type
+            return '/' + email + "/" + game_id + "/" + user_type
 
         return "/complete"
 
@@ -246,10 +245,10 @@ class GameManager:
 
             # If we haven't finished the game and we match an email
             if not is_finished and drawer_email == email:
-                return '/' + email + "/" + game_id.split('/')[-1] + "/drawer"
+                return '/' + email + "/" + game_id + "/drawer"
 
             if not is_finished and teller_email == email:
-                return '/' + email + "/" + game_id.split('/')[-1] + "/teller"            
+                return '/' + email + "/" + game_id + "/teller"            
 
         return "/unfinished"
 
