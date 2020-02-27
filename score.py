@@ -3,6 +3,9 @@ from scipy import ndimage
 from itertools import permutations
 import cv2
 import matplotlib.pyplot as plt
+from math import sqrt
+from skimage import io, morphology, measure
+import numpy as np
 
 GAUGAN2LABEL = {
     156: {"name": "sky", "color": np.array([221, 238, 156])},
