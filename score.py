@@ -1,6 +1,64 @@
 import numpy as np
 from scipy import ndimage
 from itertools import permutations
+import cv2
+import matplotlib.pyplot as plt
+
+GAUGAN2LABEL = {
+    156: {"name": "sky", "color": np.array([221, 238, 156])},
+    110: {"name": "dirt", "color": np.array([40, 110, 110])},
+    # 124: {"name": "gravel", "color": np.array([163, 164, 153])},
+    135: {"name": "mud", "color": np.array([111, 113, 135])},
+    14: {"name": "sand", "color": np.array([0, 153, 153])},
+    105: {"name": "clouds", "color": np.array([105, 105, 105])},
+    119: {"name": "fog", "color": np.array([29, 186, 119])},
+    126: {"name": "hill", "color": np.array([100, 200, 126])},
+    134: {"name": "mountain", "color": np.array([100, 150, 134])},
+    147: {"name": "river", "color": np.array([200, 100, 147])},
+    149: {"name": "rock", "color": np.array([50, 100, 149])},
+    154: {"name": "sea", "color": np.array([218, 198, 154])},
+    158: {"name": "snow", "color": np.array([170, 158, 158])},
+    161: {"name": "stone", "color": np.array([100, 161, 161])},
+    177: {"name": "water", "color": np.array([255, 200, 177])},
+    96: {"name": "bush", "color": np.array([50, 110, 96])},
+    118: {"name": "flower", "color": np.array([0, 0, 118])},
+    123: {"name": "grass", "color": np.array([0, 200, 123])},
+    162: {"name": "straw", "color": np.array([235, 163, 162])},
+    168: {"name": "tree", "color": np.array([50, 200, 168])},
+
+    # 181: {"name": "wood", "color": np.array([66, 18, 120])}
+}
+
+# GAUGAN2LABEL = {
+#     211: {"name": "sky", "label": 156},
+#     102: {"name": "dirt", "label": 110},
+#     119: {"name": "mud", "label": 135},
+#     135: {"name": "sand", "label": 14},
+#     105: {"name": "clouds", "label": 105},
+#     148: {"name": "fog", "label": 119},
+#     166: {"name": "hill", "label": 126},
+#     139: {"name": "mountain", "label": 134},
+#     125: {"name": "river", "label": 147},
+#     108: {"name": "rock", "label": 149},
+#     187: {"name": "sea", "label": 154},
+#     159: {"name": "snow", "label": 158},
+#     154: {"name": "stone", "label": 161},
+#     199: {"name": "water", "label": 177},
+#     98: {"name": "bush", "label": 96},
+#     35: {"name": "flower", "label": 118}
+# }
+
+def convert_GAUGAN2MASK(gaugan_image):
+    label_masks = np.zeros((gaugan_image.shape[0], gaugan_image.shape[1]), dtype='uint8')
+    #print(label_masks.shape)
+    #label_index = np.where(np.all(drawer_raw == np.array([221, 238, 156]), axis=-1))
+    for label, gaugan_info in GAUGAN2LABEL.items():
+        label_index = np.where(np.all(gaugan_image == gaugan_info['color'], axis=-1))
+        # if label_index.size:
+        #     print(gaugan_info["name"])
+        if label_index[0].size > 0:
+            label_masks[label_index] = label
+    return label_masks
 
 class Score:
     def calc(self, ground_truth_image, drawer_image):        
@@ -264,3 +322,27 @@ class Score:
             i += sliding_size
             j = 0
         return sample_matrix
+
+
+if __name__ == "__main__":
+    print("Debug the scorer")
+
+    #Load the image
+    drawer_raw = cv2.imread('semantic_image_3.png')
+    
+    label_masks = convert_GAUGAN2MASK(drawer_raw)
+    print(np.unique(label_masks))
+    print(label_masks.shape)
+
+    target_raw = cv2.imread('target_label.png', cv2.IMREAD_GRAYSCALE)[:512, :512]
+    print(np.unique(target_raw))
+
+    score_class = Score()
+    score = score_class.calc(target_raw, label_masks)
+    print(score)
+
+    # drawer_raw_2 = cv2.imread('gaugan_input_1.png', cv2.IMREAD_GRAYSCALE)
+    # print(drawer_raw_2[0,0])
+
+    # target_raw = cv2.imread('target_label.png', cv2.IMREAD_GRAYSCALE)
+    # print(np.unique(target_raw))

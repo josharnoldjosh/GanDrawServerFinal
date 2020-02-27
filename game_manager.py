@@ -10,7 +10,7 @@ import re
 from uuid import uuid4
 import time
 import numpy as np
-from score import Score
+from score import Score, convert_GAUGAN2MASK
 
 class GameManager:
 
@@ -179,14 +179,14 @@ class GameManager:
         # Get semantic input
         semantic = GameManager.get_most_recent_drawer_images(game_id)['semantic']
         if semantic == '':return 0
-        image = Image.open(semantic)
-        image = image.convert('L').resize((350, 350))    
-        image = np.array(image)          
+        image = cv2.imread(semantic)
+        image = image[0:512, 0:512]     
+        image = convert_GAUGAN2MASK(image)   
 
         # Get target label
-        path = os.path.join(os.getcwd(), 'data/games/', game_id, 'target_label.png')
-        ground_truth = Image.open(path).convert('L').resize((350, 350))
-        ground_truth = np.array(ground_truth)
+        path = os.path.join(os.getcwd(), 'data/games/', game_id, 'target_label.png')        
+        ground_truth = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
+        ground_truth = ground_truth[0:512, 0:512]     
 
         # calc score
         results = Score().calc(ground_truth, image)

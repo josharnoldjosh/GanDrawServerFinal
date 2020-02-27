@@ -1,1 +1,1 @@
-{"dialog": [{"text": "There is an image of an ocean", "user_type": "Teller", "turn_idx": 0}, {"text": "Done!", "user_type": "Drawer", "turn_idx": 0}, {"text": "Lets finish this game!", "user_type": "Teller", "turn_idx": 1}, {"text": "Okay!", "user_type": "Drawer", "turn_idx": 1}]}
+{"dialog": [{"text": "Hello world", "user_type": "Teller", "turn_idx": 0}, {"text": "Hello", "user_type": "Drawer", "turn_idx": 0}]}
