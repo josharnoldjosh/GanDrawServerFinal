@@ -142,6 +142,10 @@
                 document.getElementById('next_game').addEventListener('mouseup', () => {
                     window.location.href = '/';
                 });
+
+                document.getElementById('open_drawing_tool').addEventListener('mouseup', () => {
+                    window.open("http://nvidia-research-mingyuliu.com/gaugan/", "_blank"); 
+                });                
             });
         </script>
 
@@ -237,6 +241,7 @@
                 
                 <input type="text" id="textfield_input" class="textfield"> 
                 <button id="send_message" class="large-button">Connecting...</button> 
+                <button id="open_drawing_tool" class="large-button" style="background-color: #23de4f;">Open Drawing Tool</button>
             </div>
 
             <form id="upload-images" method="post" enctype="multipart/form-data" class="pane-left">  
