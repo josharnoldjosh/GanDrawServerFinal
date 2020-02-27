@@ -20,7 +20,7 @@
             var is_teller_turn = false;  
             var num_peaks_left = "?";
             var turn_idx = 0;
-            var minimum_turns_to_finish_game = 0; // UPDATE ME
+            var minimum_turns_to_finish_game = 7; // UPDATE ME
             var is_game_finished = false;
             var max_number_of_characters = 275;
             var score = 0;
@@ -31,7 +31,7 @@
                 document.getElementById("send_message").disabled = true;
                 document.getElementById("textfield_input").disabled = true;
                 
-                var ext = 'http://';            
+                var ext = 'https://';            
 
                 socket = io.connect(ext + document.domain + ':' + location.port);    
 

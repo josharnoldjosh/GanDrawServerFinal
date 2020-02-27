@@ -99,9 +99,14 @@ class GameManager:
 
         def target_label(game_id):
             path = os.path.join('data/games/', game_id, 'target_label.png')            
-            image = cv2.imread(path)    
-            image = cv2.resize(image, (350, 350))
+
+            image = cv2.imread(path)            
+            # image = image[0:350, 0:350]
+            # image = cv2.resize(image, (350, 350))
+            # image = convert_GAUGAN2MASK(image)
+
             text_mask = PutingText2Mask(image)
+
             image = Image.fromarray(text_mask)
             buffered = io.BytesIO()
             image.save(buffered, format="png")        
