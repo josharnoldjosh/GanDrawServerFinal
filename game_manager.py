@@ -9,7 +9,8 @@ import shutil
 import re
 from uuid import uuid4
 import time
-from seg2real import Seg2Real
+import numpy as np
+from score import Score
 
 class GameManager:
 
@@ -141,11 +142,14 @@ class GameManager:
         if len(synthetic) < 1: return {'synthetic':'', 'semantic':''}
         synthetic = sorted(synthetic, key=lambda x: extract_idx(x), reverse=False)
         synthetic = synthetic.pop()
+        synthetic = os.path.join(os.getcwd(), 'data/games/', game_id, synthetic)
 
         semantic = [x for x in os.listdir(path) if 'semantic_image' in x]
         if len(semantic) < 1: return {'synthetic':'', 'semantic':''}
         semantic = sorted(semantic, key=lambda x: extract_idx(x), reverse=False)
         semantic = semantic.pop()
+        semantic = os.path.join(os.getcwd(), 'data/games/', game_id, semantic)
+
         return {'synthetic':synthetic, 'semantic':semantic}
 
     @classmethod
@@ -169,10 +173,23 @@ class GameManager:
         
     @classmethod
     def score(self, game_id):
+
+        # Get semantic input
         semantic = GameManager.get_most_recent_drawer_images(game_id)['semantic']
         if semantic == '':return 0
+        image = Image.open(semantic)
+        image = image.convert('L').resize((350, 350))    
+        image = np.array(image)          
 
-        # continue ...
+        # Get target label
+        path = os.path.join(os.getcwd(), 'data/games/', game_id, 'target_label.png')
+        ground_truth = Image.open(path).convert('L').resize((350, 350))
+        ground_truth = np.array(ground_truth)
+
+        # calc score
+        results = Score().calc(ground_truth, image)
+
+        print(results)        
 
         return 0
 
