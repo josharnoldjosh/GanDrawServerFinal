@@ -188,6 +188,10 @@ class GameManager:
 
         # calc score
         results = Score().calc(ground_truth, image)
+
+        # Update score
+        GameManager.set_flags(game_id, 'score', results['co_draw'])
+
         return results['co_draw']
 
 
