@@ -79,6 +79,7 @@
                 socket.on('bad_english', function(data) {                    
                     alert(data['text']);                 
                     update_state();
+                    document.getElementById('textfield_input').value = previous_message;
                 });                
 
                 function update_parameters(data) {
@@ -95,8 +96,7 @@
 
                 socket.on('game_data', function(data) {                                                            
                     update_parameters(data);
-                    update_state();
-                    document.getElementById('textfield_input').value = previous_message;
+                    update_state();                    
                 });  
                 
                 document.getElementById('send_message').addEventListener('mouseup', () => {                                     
