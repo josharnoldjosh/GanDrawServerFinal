@@ -41,11 +41,6 @@
                     socket.emit('get_game_data', {'game_id':game_id, 'user_type':'Drawer', 'email':email});             
                 });       
 
-                socket.on('bad_english', function(data) {
-                    socket.emit('get_game_data', {'game_id':game_id, 'email':email, 'user_type':'Teller'}); 
-                    alert(data['text']);                    
-                });                       
-
                 function finish_game() {                                                     
                     document.getElementById('send_message').style.display = "none";                                                    
                     document.getElementById('upload-images').style.display = "none";
@@ -84,6 +79,11 @@
                         return;
                     }
                 };
+
+                socket.on('bad_english', function(data) {                    
+                    alert(data['text']);                 
+                    update_state();
+                });                
 
                 socket.on('game_data', function(data) {
                     document.getElementById("chat").value = data['text'].replace(/Drawer/gi, "You");

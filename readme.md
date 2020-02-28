@@ -2,6 +2,9 @@
 `pip3 install -r requirements.txt --user`
 
 ## launch server
+
+NOTE! Ensure `connections/` folder is deleted before running the app!
+
 `gunicorn --worker-class eventlet -w 1 app:app`
 
 ## Managing the collected data
