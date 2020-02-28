@@ -37,6 +37,10 @@
                     socket.emit('find_game', {'email':email, 'user_type':user_type})
                 }); 
 
+                document.getElementById('instructions').addEventListener('mouseup', () => {                    
+                    window.open("https://docs.google.com/document/d/1Fvcwhd311HF5zqV5UB75vngWo52447BDx3jEGNl2hkM/edit?usp=sharing", "_blank"); 
+                }); 
+
                 socket.on('go_to_game', function(data) {                                    
                     window.location.href = data['href'];
                 });            
@@ -103,7 +107,8 @@
                     <input type="radio" id="teller" name="user_type" value="teller">                    
                 </div>
 
-                <button id="join_game" class="button-large">Join Game</button>            
+                <button id="join_game" class="button-large">Join Game</button>      
+                <button id="instructions" class="button-large" style="background-color: #6fc973;">Game Instructions</button>            
             </div>
         </div>
     </body>
