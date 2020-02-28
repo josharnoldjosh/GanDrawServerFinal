@@ -1,6 +1,7 @@
 from flask import * 
 from flask_socketio import *
 from game_manager import GameManager as GM
+from english import english
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -90,8 +91,14 @@ def send_game_data(message):
 
 @socketio.on('send_message')   
 def message_recieved(message):        
-    game_id = message['game_id']
     text = message['text']
+
+    check_english = english(text)
+    if not check_english['can_send']:
+        emit('bad_english', {'text':check_english['info']})
+        return
+
+    game_id = message['game_id']    
     user_type = message['user_type']    
     email = message['email']
     GM.append_message(game_id, text, user_type, email)

@@ -31,18 +31,22 @@
                 document.getElementById("send_message").disabled = true;
                 document.getElementById("textfield_input").disabled = true;
                 
-                var ext = 'https://';            
+                var ext = 'https://';    
+                if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
+                    ext = "http://";
+                }                  
 
                 socket = io.connect(ext + document.domain + ':' + location.port);    
-
-                socket.on('disconnect', function() {                
-                    socket.emit('leave_game', {'game_id':game_id, 'email':email, 'user_type':'Teller'});                    
-                });       
 
                 socket.on('connect', function() {
                     socket.emit('join_game', {'game_id':game_id, 'email':email, 'user_type':'Teller'});                    
                     socket.emit('get_game_data', {'game_id':game_id, 'email':email, 'user_type':'Teller'}); 
                 });       
+
+                socket.on('bad_english', function(data) {
+                    socket.emit('get_game_data', {'game_id':game_id, 'email':email, 'user_type':'Teller'}); 
+                    alert(data['text']);                    
+                });                       
                 
                 // Tear down this game
                 function finish_game() {
