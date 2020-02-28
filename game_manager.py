@@ -220,6 +220,8 @@ class GameManager:
 
     @classmethod
     def connection_exists(self, game_id, user_type):
+        if not os.path.exists('connections/'): os.mkdir('connections/')
+        
         all_files = [x for x in os.listdir('connections') if ".json" in x]
 
         for json_file in all_files:
@@ -232,6 +234,8 @@ class GameManager:
 
     @classmethod
     def connection_exists_with_email(self, game_id, email):
+        if not os.path.exists('connections/'): os.mkdir('connections/')
+
         all_files = [x for x in os.listdir('connections') if ".json" in x]
 
         for json_file in all_files:
@@ -243,7 +247,8 @@ class GameManager:
         return False
 
     @classmethod
-    def find_game(self, email, user_type):   
+    def find_game(self, email, user_type):
+        if not os.path.exists('connections/'): os.mkdir('connections/')
 
         # Get email     
         email = email.split('@')[0]
