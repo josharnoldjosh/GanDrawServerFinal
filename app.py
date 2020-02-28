@@ -52,7 +52,7 @@ def find_game(message):
 @socketio.on('join_game')  
 def join_game(message):    
     join_room(message['game_id'])
-    GM.add_connection(request.sid, message['game_id'], message['user_type'])
+    GM.add_connection(request.sid, message['game_id'], message['user_type'], message['email'])
 
 @socketio.on('leave_game')
 def leave_game(message):    

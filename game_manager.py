@@ -231,6 +231,18 @@ class GameManager:
         return False
 
     @classmethod
+    def connection_exists_with_email(self, game_id, email):
+        all_files = [x for x in os.listdir('connections') if ".json" in x]
+
+        for json_file in all_files:
+            with open('connections/'+json_file, 'r') as file:
+                data = json.load(file)
+                if data['game_id'] == game_id and data['email'].lower() == email:
+                    return True
+
+        return False
+
+    @classmethod
     def find_game(self, email, user_type):   
 
         # Get email     
@@ -240,7 +252,7 @@ class GameManager:
         for game_id in GameManager.load_games():
             is_finished = GameManager.read_flags(game_id, "finished")            
 
-            if is_finished or GameManager.connection_exists(game_id, user_type):
+            if is_finished or GameManager.connection_exists(game_id, user_type) or GameManager.connection_exists_with_email(game_id, email):
                 continue
 
             return '/' + email + "/" + game_id + "/" + user_type
@@ -248,10 +260,10 @@ class GameManager:
         return "/error"
 
     @classmethod
-    def add_connection(self, sid, game_id, user_type):
+    def add_connection(self, sid, game_id, user_type, email):
         if not os.path.exists('connections/'): os.mkdir('connections/')
 
-        data = {'game_id':game_id, 'user_type':user_type}
+        data = {'game_id':game_id, 'user_type':user_type, 'email':email}
         path = os.path.join('connections/', sid+'.json')
         with open(path, 'w') as file:
             json.dump(data, file)
