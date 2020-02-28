@@ -11,14 +11,13 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
         <script type="text/javascript" charset="utf-8">
-             var socket;
-             var unique_request = '{{ unique_request }}';
+             var socket;             
              var email = "";
-             var user_type = "drawer";
+             var user_type = "drawer";             
 
             $(document).ready(function() {
 
-                var ext = 'https://';            
+                var ext = 'http://';            
                 socket = io.connect(ext + document.domain + ':' + location.port);
 
                 function load_data() {
@@ -33,21 +32,9 @@
                     }
                 };
 
-                document.getElementById('join_game').addEventListener('mouseup', () => {
-                    // document.getElementById('join_game').disabled = true;         
-                    // document.getElementById('resume_game').disabled = true;             
-                    // document.getElementById('join_game').innerHTML = "Loading..."
+                document.getElementById('join_game').addEventListener('mouseup', () => {                    
                     load_data();
-                    socket.emit('find_game', {'unique_request':unique_request, 'email':email, 'user_type':user_type})
-                }); 
-
-
-                document.getElementById('resume_game').addEventListener('mouseup', () => {
-                    // document.getElementById('join_game').disabled = true;                                    
-                    // document.getElementById('resume_game').disabled = true;                    
-                    // document.getElementById('resume_game').innerHTML = "Loading..."
-                    load_data();
-                    socket.emit('resume_game', {'unique_request':unique_request, 'email':email, 'user_type':user_type})
+                    socket.emit('find_game', {'email':email, 'user_type':user_type})
                 }); 
 
                 socket.on('go_to_game', function(data) {                                    
@@ -116,9 +103,7 @@
                     <input type="radio" id="teller" name="user_type" value="teller">                    
                 </div>
 
-                <button id="join_game" class="button-large">Join Game</button>
-
-                <button id="resume_game" class="button-large">Resume Game</button>
+                <button id="join_game" class="button-large">Join Game</button>            
             </div>
         </div>
     </body>

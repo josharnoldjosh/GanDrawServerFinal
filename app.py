@@ -8,12 +8,18 @@ app.config['UPLOAD_FOLDER'] = 'tmp/'
 socketio = SocketIO(app, logger=True)
 
 @app.route('/')
-def root():
-    return render_template('index.html', unique_request=GM.unique_request())
+def root():    
+    return render_template('index.html')
+
+@app.route('/error')
+def error():    
+    return "😨 something may have gone terribly wrong, or terribly great, please try again!"   
 
 @app.route('/<email>/<game_id>/<user_type>')
 def game(email, game_id, user_type):    
-    # TODO: Check if game_id exists with GameManager
+    
+    if not GM.game_exists(game_id): return "Sorry, there is no game to be found at this link :("
+
     if user_type == "drawer":
         GM.set_flags(game_id, 'drawer_connected', True)
         GM.set_flags(game_id, 'drawer_email', email)
@@ -37,39 +43,24 @@ def upload_drawer_images(game_id):
             return "success"    
     return 'error'
 
-@app.route('/complete')
-def finished_data_collection():
-    return "There are no more games to join at this time."
-
-@app.route('/unfinished')
-def cannot_find_unfinished_game():
-    return "There are no unfinished games found for your email. Please try join a new game."
-
-@app.route('/error')
-def error():
-    return "Uh oh. Something went wrong. Please try again!"
-
 @socketio.on('find_game')
 def find_game(message):
-    email = message["email"].lower()
-    user_type = message["user_type"].lower()
-    message["href"] = GM.find_game(email, user_type)
-    emit('go_to_game', message)
-
-@socketio.on('resume_game')
-def resume_game(message):
-    email = message["email"].lower()
-    user_type = message["user_type"].lower()
-    message["href"] = GM.resume_game(email, user_type)
-    emit('go_to_game', message)    
+    result = GM.find_game(message['email'], message['user_type'])
+    print(result)
+    emit('go_to_game', {'href':result})
 
 @socketio.on('join_game')  
 def join_game(message):    
     join_room(message['game_id'])
+    GM.add_connection(request.sid, message['game_id'], message['user_type'])
 
 @socketio.on('leave_game')
 def leave_game(message):    
     leave_room(message['game_id'])
+
+@socketio.on('disconnect')  
+def user_connected():    
+    GM.remove_connection(request.sid)
 
 @socketio.on('get_game_data')  
 def send_game_data(message):
@@ -106,7 +97,8 @@ def message_recieved(message):
     game_id = message['game_id']
     text = message['text']
     user_type = message['user_type']    
-    GM.append_message(game_id, text, user_type)
+    email = message['email']
+    GM.append_message(game_id, text, user_type, email)
     GM.set_flags(game_id=game_id, key="is_drawer_turn", toggle=True)
     if user_type.lower() == "drawer":
         GM.set_flags(game_id=game_id, key="drawer_uploaded_images", value=False)

@@ -15,7 +15,7 @@ from score import Score, convert_GAUGAN2MASK
 class GameManager:
 
     @classmethod
-    def append_message(self, game_id, text, user_type):
+    def append_message(self, game_id, text, user_type, email):
         path = os.path.join('data/games/', game_id, 'dialog.json')
         if not os.path.exists(path): return
 
@@ -25,7 +25,7 @@ class GameManager:
             curr_idx = self.get_current_turn_idx(game_id)
             if user_type.lower() == 'drawer': curr_idx -= 1
 
-            turn = {'text':text, 'user_type':user_type, 'turn_idx':curr_idx}
+            turn = {'text':text, 'user_type':user_type, 'turn_idx':curr_idx, 'email':email}
             dialog['dialog'].append(turn)            
         
             with open(path, 'w') as file:
@@ -213,43 +213,60 @@ class GameManager:
         return all_games
 
     @classmethod
-    def find_game(self, email, user_type):        
+    def game_exists(self, game_id):
+        path = os.path.join('data/games', game_id)
+        if os.path.exists(path): return True
+        return False
+
+    @classmethod
+    def connection_exists(self, game_id, user_type):
+        all_files = [x for x in os.listdir('connections') if ".json" in x]
+
+        for json_file in all_files:
+            with open('connections/'+json_file, 'r') as file:
+                data = json.load(file)
+                if data['game_id'] == game_id and data['user_type'].lower() == user_type.lower():
+                    return True
+
+        return False
+
+    @classmethod
+    def find_game(self, email, user_type):   
+
+        # Get email     
         email = email.split('@')[0]
         if len(email) < 1: return '/error'
         
         for game_id in GameManager.load_games():
             is_finished = GameManager.read_flags(game_id, "finished")            
-            has_drawer = GameManager.read_flags(game_id, "drawer_connected")
-            has_teller = GameManager.read_flags(game_id, "teller_connected")
 
-            # If the game is finished or already has a drawer or teller connected, lets find a different game
-            if is_finished or (user_type == "drawer" and has_drawer) or (user_type == "teller" and has_teller):
+            if is_finished or GameManager.connection_exists(game_id, user_type):
                 continue
 
             return '/' + email + "/" + game_id + "/" + user_type
 
-        return "/complete"
-
+        return "/error"
 
     @classmethod
-    def resume_game(self, email, user_type):
-        # ensure valid email
-        email = email.split('@')[0]
-        if len(email) < 1: return '/error'
+    def add_connection(self, sid, game_id, user_type):
+        if not os.path.exists('connections/'): os.mkdir('connections/')
 
-        # Iterate over games
-        for game_id in GameManager.load_games():
-            is_finished = GameManager.read_flags(game_id, "finished")
-            drawer_email = GameManager.read_flags(game_id, "drawer_email").lower()
-            teller_email = GameManager.read_flags(game_id, "teller_email").lower()            
+        data = {'game_id':game_id, 'user_type':user_type}
+        path = os.path.join('connections/', sid+'.json')
+        with open(path, 'w') as file:
+            json.dump(data, file)
+        return
 
-            # If we haven't finished the game and we match an email
-            if not is_finished and drawer_email == email:
-                return '/' + email + "/" + game_id + "/drawer"
+    @classmethod
+    def remove_connection(self, sid):
+        if not os.path.exists('connections/'): os.mkdir('connections/')
 
-            if not is_finished and teller_email == email:
-                return '/' + email + "/" + game_id + "/teller"            
+        path = os.path.join('connections/', sid+'.json')
+        try:
+            os.remove(path)
+        except:
+            pass
 
-        return "/unfinished"
+
 
 
