@@ -98,15 +98,9 @@ class GameManager:
             return 'data:image/png;base64,'+base64.b64encode(imgByteArr.getvalue()).decode('ascii')    
 
         def target_label(game_id):
-            path = os.path.join('data/games/', game_id, 'target_label.png')            
-
+            path = os.path.join('data/games/', game_id, 'target_label.png')
             image = cv2.imread(path)            
-            # image = image[0:350, 0:350]
-            # image = cv2.resize(image, (350, 350))
-            # image = convert_GAUGAN2MASK(image)
-
             text_mask = PutingText2Mask(image)
-
             image = Image.fromarray(text_mask)
             buffered = io.BytesIO()
             image.save(buffered, format="png")        
@@ -268,7 +262,7 @@ class GameManager:
     def add_connection(self, sid, game_id, user_type, email):
         if not os.path.exists('connections/'): os.mkdir('connections/')
 
-        data = {'game_id':game_id, 'user_type':user_type, 'email':email}
+        data = {'game_id':game_id, 'user_type':user_type.lower(), 'email':email.lower()}
         path = os.path.join('connections/', sid+'.json')
         with open(path, 'w') as file:
             json.dump(data, file)

@@ -20,13 +20,9 @@ def game(email, game_id, user_type):
     
     if not GM.game_exists(game_id): return "Sorry, there is no game to be found at this link :("
 
-    if user_type == "drawer":
-        GM.set_flags(game_id, 'drawer_connected', True)
-        GM.set_flags(game_id, 'drawer_email', email)
+    if user_type == "drawer":        
         return render_template('drawer.html', game_id=game_id, email=email)
-    else:
-        GM.set_flags(game_id, 'teller_connected', True)
-        GM.set_flags(game_id, 'teller_email', email)
+    else:        
         return render_template('teller.html', game_id=game_id, email=email)
 
 @app.route('/<game_id>/upload', methods=['POST'])

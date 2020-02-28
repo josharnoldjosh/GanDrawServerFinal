@@ -53,15 +53,11 @@ def make_game(idx, target_image_path, target_label_path):
     shutil.copy(target_label_path, os.path.join(game_path, 'target_label.png'))
 
     flags = {
-        'finished':False,
-        'drawer_connected':False,
-        'teller_connected':False,
+        'finished':False,        
         'is_drawer_turn':False,
         'drawer_uploaded_images':False,
         'num_peaks_left':2,
-        'score':0,
-        'drawer_email':'',
-        'teller_email':'',
+        'score':0,        
         'target_image_original_name':target_image_path.split('/')[-1]
     }
 

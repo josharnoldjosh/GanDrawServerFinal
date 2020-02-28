@@ -1,6 +1,8 @@
 # Josh
 emails.txt
 data/finished_games/
+connections/
+data/games/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
