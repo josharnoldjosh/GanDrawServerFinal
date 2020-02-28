@@ -25,6 +25,7 @@
             var max_number_of_characters = 275;
             var score = 0;
             var socket;
+            var previous_message = "";
 
             $(document).ready(function() {
 
@@ -95,10 +96,12 @@
                 socket.on('game_data', function(data) {                                                            
                     update_parameters(data);
                     update_state();
+                    document.getElementById('textfield_input').value = previous_message;
                 });  
                 
                 document.getElementById('send_message').addEventListener('mouseup', () => {                                     
                     var txt = document.getElementById('textfield_input').value;
+                    previous_message = txt;
 
                     function send_message() {
                         document.getElementById('send_message').innerHTML = "Sending...";   
@@ -106,7 +109,7 @@
                     };
         
                     if (txt.length < max_number_of_characters && txt.length > 2) {
-                        document.getElementById('textfield_input').value = "";
+                        document.getElementById('textfield_input').value = "";                        
                         document.getElementById("send_message").disabled = true;
                         document.getElementById("textfield_input").disabled = true;
                         send_message(txt)                                   

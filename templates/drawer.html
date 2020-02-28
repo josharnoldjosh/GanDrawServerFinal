@@ -22,6 +22,7 @@
             var is_game_finished = false;
             var score = 0;
             var max_number_of_characters = 275;
+            var previous_message = "";
 
             var socket;
             $(document).ready(function() {
@@ -83,6 +84,7 @@
                 socket.on('bad_english', function(data) {                    
                     alert(data['text']);                 
                     update_state();
+                    document.getElementById('textfield_input').value = previous_message;
                 });                
 
                 socket.on('game_data', function(data) {
@@ -113,6 +115,7 @@
                     };
 
                     var text = document.getElementById('textfield_input').value;
+                    previous_message = text;
                     send_message(text);                                    
                 });
                 
