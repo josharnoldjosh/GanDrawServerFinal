@@ -422,5 +422,7 @@ class GameManager:
 
     @classmethod
     def prune_finished_games(self):
+        for item in ['landscape_target', 'landscape_label', 'games']:
+            path = os.path.join(os.getcwd(), 'data/', item)
         FinishedGames.move()
         GenGames.regen()
