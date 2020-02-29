@@ -11,6 +11,116 @@ from uuid import uuid4
 import time
 import numpy as np
 from score import Score, convert_GAUGAN2MASK
+from collections import Counter
+
+class CountGames:
+    
+    def __init__(self):
+        path = os.path.join(os.getcwd(), 'data/finished_games/')
+        self.games = [x for x in os.listdir(path) if os.path.isdir(os.path.join(path, x))]
+        self.target_images = []
+
+        for game_id in self.games:            
+            path = os.path.join(os.getcwd(), 'data/finished_games/', game_id, 'flags.json')
+            with open(path, 'r') as file:
+                data = json.load(file)
+                self.target_images += [data['target_image_original_name']]
+
+        self.counts = Counter(self.target_images)
+    
+    def count(self, target_image):
+        if target_image in self.counts.keys():
+            return self.counts[target_image]
+        return 0
+
+class GenGames:
+
+    @classmethod
+    def regen(self):
+        counter = CountGames()
+        GenGames.ensure_dirs()
+
+        for idx, target_image in GenGames.enumerate_games():            
+            (target_path, label_path) = GenGames.target_label_paths(target_image)
+
+            if os.path.exists(target_path) and GenGames.can_make_game(idx, target_path):
+
+                if counter.count(target_image) < 5:
+                    print(idx, "has current count", counter.count(target_image), "regenerating...")
+                    GenGames.make_game(idx, target_path, label_path)
+                else:
+                    print(idx, "has count", counter.count(target_image), "no need to regenerate!")
+
+    @classmethod
+    def target_label_paths(self, target_image):
+        target_path = os.path.join(os.getcwd(), 'data/','landscape_target/', target_image)
+        label_path = os.path.join(os.getcwd(), 'data/', 'landscape_label/', target_image.replace('jpg', 'png'))
+        return (target_path, label_path)
+
+    @classmethod
+    def enumerate_games(self):
+        return enumerate([x for x in os.listdir(os.path.join(os.getcwd(), 'data/', 'landscape_target/')) if ".jpg" in x])
+
+    @classmethod
+    def ensure_dirs(self):
+        for item in ['landscape_target', 'landscape_label', 'games']:
+            path = os.path.join(os.getcwd(), 'data/', item)
+       
+    @classmethod
+    def can_make_game(self, idx, target_image_path):    
+        target_image_original_name = target_image_path.split('/')[-1]    
+        all_games_path = os.path.join(os.getcwd(), 'data/games/')
+        for game in os.listdir(all_games_path):  
+            if not os.path.isdir(os.path.join(os.getcwd(), 'data/games/', game)): continue
+
+            if GenGames.game_original_target_name(game) == target_image_original_name and not GenGames.is_game_finished(game):
+                print("Cannot regen", idx, "because the game hasn't finished!")
+                return False          
+        return True
+
+    @classmethod
+    def game_original_target_name(self, game_id):
+        try:
+            path = os.path.join(os.getcwd(), 'data/games/', game_id, 'flags.json')
+            with open(path, 'r') as file:
+                flags = json.load(file)
+                return flags['target_image_original_name']
+        except Exception as error:
+            print(error)
+        return ""
+
+    @classmethod
+    def is_game_finished(self, game_id):
+        path = os.path.join(os.getcwd(), 'data/games/', game_id, 'flags.json')
+        try:
+            with open(path, 'r') as file:
+                flags = json.load(file)
+                return flags['finished']
+        except Exception as error:
+            print(error)
+        return False
+
+    @classmethod
+    def make_game(self, idx, target_image_path, target_label_path):
+        game_path = os.path.join(os.getcwd(), 'data/', 'games/', str(idx)+'/')
+        if os.path.exists(game_path): shutil.rmtree(game_path)
+
+        os.mkdir(game_path)    
+        shutil.copy(target_image_path, os.path.join(game_path, 'target_image.jpg'))
+        shutil.copy(target_label_path, os.path.join(game_path, 'target_label.png'))
+
+        flags = {
+            'finished':False,        
+            'is_drawer_turn':False,
+            'drawer_uploaded_images':False,
+            'num_peaks_left':2,
+            'score':0,        
+            'target_image_original_name':target_image_path.split('/')[-1]
+        }
+
+        with open(os.path.join(game_path, 'flags.json'), 'w') as file: json.dump(flags, file)    
+        dialog = {'dialog':[]}
+        with open(os.path.join(game_path, 'dialog.json'), 'w') as file: json.dump(dialog, file)
 
 class FinishedGames:
 
@@ -19,8 +129,7 @@ class FinishedGames:
         self.ensure_dir()    
         path = os.path.join(os.getcwd(), 'data/games/')
         for game_id in [x for x in os.listdir(path) if os.path.isdir(os.path.join(path, x))]:
-            if self.is_game_finished(game_id):
-                print("moving...")
+            if self.is_game_finished(game_id):                
                 self.move_folder(game_id)
 
     @classmethod
@@ -314,6 +423,4 @@ class GameManager:
     @classmethod
     def prune_finished_games(self):
         FinishedGames.move()
-
-
-
+        GenGames.regen()
