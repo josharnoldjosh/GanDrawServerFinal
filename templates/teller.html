@@ -26,6 +26,7 @@
             var score = 0;
             var socket;
             var previous_message = "";
+            var list_of_connections = "";
 
             $(document).ready(function() {
 
@@ -43,7 +44,20 @@
                 socket.on('connect', function() {
                     socket.emit('join_game', {'game_id':game_id, 'email':email, 'user_type':'Teller'});                    
                     socket.emit('get_game_data', {'game_id':game_id, 'email':email, 'user_type':'Teller'}); 
-                });                            
+                });   
+
+                socket.on('connections', function(data) {
+                    function removeDuplicates(array) {
+                        return array.filter((a, b) => array.indexOf(a) === b)
+                    };
+
+                    if (String(game_id) in data) {
+                        arr = data[String(game_id)];
+                        arr = removeDuplicates(arr);
+                        list_of_connections = arr.join("<br>");
+                        document.getElementById('connections').innerHTML = "Currently in this game:<br>" + list_of_connections;
+                    };
+                });                       
                 
                 // Tear down this game
                 function finish_game() {
@@ -239,6 +253,7 @@
 
         <div class="container">
             <h1 id="title" class="title">Chat interface</h1>
+            <p id="connections"></p>
 
             <div class="pane-left">                
                 <img id="target_image" style="width: 350px; height: 350px; margin: 5px;">  

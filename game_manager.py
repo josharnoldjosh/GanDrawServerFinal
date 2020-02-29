@@ -11,7 +11,7 @@ from uuid import uuid4
 import time
 import numpy as np
 from score import Score, convert_GAUGAN2MASK
-from collections import Counter
+from collections import Counter, defaultdict
 
 class CountGames:
     
@@ -426,3 +426,23 @@ class GameManager:
             path = os.path.join(os.getcwd(), 'data/', item)
         FinishedGames.move()
         GenGames.regen()
+
+    @classmethod
+    def gather_connections(self):
+        path = os.path.join(os.getcwd(), 'connections/')
+        all_json_files = [os.path.join(os.getcwd(), 'connections/', x) for x in os.listdir(path) if '.json' in x]
+
+        result = defaultdict(list)
+        for path in all_json_files:
+            with open(path, 'r') as file:
+                data = json.load(file)
+                result[data["game_id"]].append(data['email'])
+
+        return result
+
+
+
+
+
+
+

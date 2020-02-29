@@ -48,17 +48,21 @@ def find_game(message):
     emit('go_to_game', {'href':result})
 
 @socketio.on('join_game')  
-def join_game(message):    
+def user_connected(message):    
     join_room(message['game_id'])
     GM.add_connection(request.sid, message['game_id'], message['user_type'], message['email'])
+    connection_data = GM.gather_connections()
+    emit('connections', dict(connection_data), broadcast=True)
 
 @socketio.on('leave_game')
 def leave_game(message):    
     leave_room(message['game_id'])
 
 @socketio.on('disconnect')  
-def user_connected():    
+def user_disconnected():    
     GM.remove_connection(request.sid)
+    connection_data = GM.gather_connections()
+    emit('connections', dict(connection_data), broadcast=True)
 
 @socketio.on('get_game_data')  
 def send_game_data(message):
