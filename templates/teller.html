@@ -35,6 +35,7 @@
                 var ext = 'https://';    
                 if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
                     ext = "http://";
+                    minimum_turns_to_finish_game = 0;
                 }                  
 
                 socket = io.connect(ext + document.domain + ':' + location.port);    

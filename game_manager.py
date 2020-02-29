@@ -12,6 +12,39 @@ import time
 import numpy as np
 from score import Score, convert_GAUGAN2MASK
 
+class FinishedGames:
+
+    @classmethod
+    def move(self):    
+        self.ensure_dir()    
+        path = os.path.join(os.getcwd(), 'data/games/')
+        for game_id in [x for x in os.listdir(path) if os.path.isdir(os.path.join(path, x))]:
+            if self.is_game_finished(game_id):
+                print("moving...")
+                self.move_folder(game_id)
+
+    @classmethod
+    def ensure_dir(self):
+        path = os.path.join(os.getcwd(), 'data/finished_games/')
+        if not os.path.exists(path): os.mkdir(path)
+
+    @classmethod
+    def is_game_finished(self, game_id):
+        path = os.path.join(os.getcwd(), 'data/games/', game_id, 'flags.json')
+        try:
+            with open(path, 'r') as file:
+                flags = json.load(file)
+                return flags['finished']
+        except Exception as error:
+            print(error)
+        return False
+
+    @classmethod
+    def move_folder(self, game_id):
+        path = os.path.join(os.getcwd(), 'data/games/', game_id)
+        output_path = os.path.join(os.getcwd(), 'data/finished_games/' + str(uuid4())[:8] + '/')
+        shutil.move(path, output_path)
+
 class GameManager:
 
     @classmethod
@@ -278,6 +311,9 @@ class GameManager:
         except:
             pass
 
+    @classmethod
+    def prune_finished_games(self):
+        FinishedGames.move()
 
 
 

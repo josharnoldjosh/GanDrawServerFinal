@@ -10,8 +10,9 @@ import os
 import shutil
 import json
 
-if not os.path.exists('games/'):
-    os.mkdir('games/')
+if not os.path.exists('landscape_target/'): os.mkdir('landscape_target/')
+if not os.path.exists('landscape_label/'): os.mkdir('landscape_label/')
+if not os.path.exists('games/'): os.mkdir('games/')
 
 def game_original_target_name(game_id):
     try:
