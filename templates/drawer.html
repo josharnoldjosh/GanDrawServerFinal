@@ -43,6 +43,10 @@
                     socket.emit('get_game_data', {'game_id':game_id, 'user_type':'Drawer', 'email':email});             
                 });       
 
+                socket.on('disconnect', function() {
+                    alert('Please refresh your page! You disconnected :(');
+                });
+
                 socket.on('connections', function(data) {
                     function removeDuplicates(array) {
                         return array.filter((a, b) => array.indexOf(a) === b)
