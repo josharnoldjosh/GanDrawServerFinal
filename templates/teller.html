@@ -20,7 +20,7 @@
             var is_teller_turn = false;  
             var num_peaks_left = "?";
             var turn_idx = 0;
-            var minimum_turns_to_finish_game = 1; // UPDATE ME
+            var minimum_turns_to_finish_game = 5; // UPDATE ME
             var is_game_finished = false;
             var max_number_of_characters = 275;
             var score = 0;
@@ -225,7 +225,7 @@
             .textfield {
                 margin: 5px;
                 height: 30px;
-                width: 500px;
+                width: 365px;
             }
 
             .extra-space {
@@ -248,7 +248,13 @@
 
             <div class="pane-right">                
                 <textarea id="chat" class="chat-pane"></textarea> 
-                <input type="text" id="textfield_input" class="textfield"> 
+
+                <div style="display: flex; justify-content: center; align-items: center; align-content: center;">
+                    <b style="height: 25px;">Enter text HERE:</b>
+                    <input type="text" id="textfield_input" class="textfield">     
+                </div>
+                
+
                 <button id="send_message" class="large-button">Connecting...</button> 
                 <button id="peek_button" class="large-button" style="background-color: #fc6603;">Peek (?)</button>
                 <button id="finish_game" class="large-button" style="background-color: #9342f5;">Finish Game</button> 
@@ -257,6 +263,19 @@
                     <p id="score">Score achieved: 0</p>
                     <button id="next_game" class="large-button">Next Game</button>
                 </div>                
+            </div>
+
+            <div class="pane-right">
+                <br>
+                <p>NOTE: If no body responds or interacts after ~10 minutes, please <b>close</b> this tab, and join a new game as a Teller :)</p>
+                <br>
+                <b>Brief Instructions:</b>
+                <p>1. Please sequentially describe the image to the Drawer in a way they will be able to re-draw the image. You don't have to describe the WHOLE image at once, you can first describe the mountains, then the trees, etc.</p>
+                <p>2. Respond to the questions the Drawer asks</p>
+                <p>3. You have the option to "peek" by using the orange button to see what the Drawer has drawn thus far.</p>
+                <p>4. You can end the game after 5 turns, but the more turns is better :)</p>
+                <p>5. The Drawer has very limited control over the generated image, they cannot manipulate the image perfectly, so as long as its a good effort made, don't worry if the image isn't pixel perfect. </p>
+                <br>
             </div>
         </div>    
     </body>

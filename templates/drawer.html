@@ -222,7 +222,7 @@
             .textfield {
                 margin: 5px;
                 height: 30px;
-                width: 500px;
+                width: 365px;
             }
 
             .extra-space {
@@ -245,8 +245,12 @@
                     <p id="score">Score achieved: 0</p>
                     <button id="next_game" class="large-button">New Game</button>
                 </div>
-                
-                <input type="text" id="textfield_input" class="textfield"> 
+                            
+                <div style="display: flex; justify-content: center; align-items: center; align-content: center;">
+                    <b style="height: 25px;">Enter text HERE:</b>
+                    <input type="text" id="textfield_input" class="textfield">     
+                </div>
+
                 <button id="send_message" class="large-button">Connecting...</button> 
                 <button id="open_drawing_tool" class="large-button" style="background-color: #23de4f;">Open Drawing Tool</button>
             </div>
@@ -263,6 +267,21 @@
                 </div>                                      
                 <input id="upload-images-button" type="submit" class="small-button" value="Upload">
             </form>   
+
+            <div style="width: 400px;">
+                <br>
+                <p>NOTE: If no body responds or interacts after ~10 minutes, please <b>close</b> this tab, and join a new game as a Drawer :)</p>
+                <br>
+                <b>Brief Instructions:</b>
+                <p>1. Wait for the teller to describe the image</p>
+                <p>2. Open the drawing tool with the green button, draw your image & then download both of the images. (Ugly image & nice looking image.)</p>
+                <p>3. Upload you images by clicking the two "Choose file" buttons, then click the blue upload button.</p>
+                <p>4. Ask an informative question (e.g how dense are the trees? How tall is the mountain? Etc...)</p>
+                <p>5. Please repeat until the Teller ends the game :)</p>
+                <p>6. Please try to make the drawing look as realistic as possible! Even if there is a bad score, we will still give bonus for good looking images!!!</p>
+                <br>
+            </div>
+
         </div>             
     </body>
 </html>
