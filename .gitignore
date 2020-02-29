@@ -1,12 +1,12 @@
 # Josh
 emails.txt
-connections/
-data/games/
-data/finished_games/
-data/landscape_target/
-data/landscape_label/
-etc/DataViewer/static/finished_games/
-etc/estimate_dialogs_left_to_collect/finished_games/
+connections/*
+data/games/*
+data/finished_games/*
+data/landscape_target/*
+data/landscape_label/*
+etc/DataViewer/static/finished_games/*
+etc/estimate_dialogs_left_to_collect/finished_games/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
