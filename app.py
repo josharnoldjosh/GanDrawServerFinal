@@ -2,6 +2,7 @@ from flask import *
 from flask_socketio import *
 from game_manager import GameManager as GM
 from english import english
+from payment import Payment
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -15,6 +16,12 @@ def root():
 @app.route('/error')
 def error():    
     return "😨 something may have gone terribly wrong, or terribly great, please try again!"   
+
+@app.route('/payment/<email>')
+def calculate_payment(email):
+    total_earned = Payment.calculate(email)    
+    num_games = Payment.num_games_contributed(email)
+    return f"Your estimated earnings are ${total_earned:.2f}.<br><br>You contributed to {num_games} games."
 
 @app.route('/<email>/<game_id>/<user_type>')
 def game(email, game_id, user_type):    
