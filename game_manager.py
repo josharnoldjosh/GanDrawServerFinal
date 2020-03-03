@@ -213,6 +213,7 @@ class GameManager:
     @classmethod
     def read_flags(self, game_id, key):
         path = os.path.join('data/games/', game_id, 'flags.json')
+        if not os.path.exists(path): return ""
         with open(path, 'r') as file:
             flags = json.load(file)
             return flags[key]
