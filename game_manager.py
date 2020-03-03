@@ -191,6 +191,7 @@ class GameManager:
     @classmethod
     def drawer_uploaded_images(self, game_id):
         path = os.path.join('data/games/', game_id, 'flags.json')
+        if not os.path.exists(path): return False
         with open(path, 'r') as file:
             flags = json.load(file)
             return flags["drawer_uploaded_images"]
