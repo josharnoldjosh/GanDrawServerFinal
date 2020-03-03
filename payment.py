@@ -81,10 +81,13 @@ class PaymentHelper:
             json_file = [x for x in os.listdir(path) if "peek" in x][0]         
             to_read = os.path.join(os.getcwd(), 'data/finished_games/', game_id, json_file)             
 
-            print("trying to read file")
-            with open(to_read, 'r') as file:
-                print('reading...')
-                unix_timestamp = int(file.readlines()[0].split(".")[0])
+            with open(to_read, 'r') as file:                
+                timestamp_str = file.readlines()[0]
+                print(timestamp_str)
+                if "." in timestamp_str: timestamp_str = timestamp_str.split(".")[0]
+                print(timestamp_str)
+                unix_timestamp = int(timestamp_str)
+                print(unix_timestamp)
                 to_check = datetime.datetime.fromtimestamp(unix_timestamp)        
                 ideal = datetime.datetime(2020, 3, 2)
                 if utc.localize(to_check) > utc.localize(ideal): return True
