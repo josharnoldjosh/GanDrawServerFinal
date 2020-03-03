@@ -86,7 +86,7 @@ def send_game_data(message):
     is_game_finished = GM.read_flags(game_id, 'finished')
     score = GM.score(game_id)
 
-    if is_drawer_turn == "" or num_peaks_left == "" or is_game_finished == "":
+    if is_drawer_turn is None or num_peaks_left is None or is_game_finished is None:
         return
 
     payload = {
@@ -126,7 +126,7 @@ def message_recieved(message):
 def peek(message):
     game_id = message['game_id']
     num_peeks = GM.read_flags(game_id, 'num_peaks_left')
-    if num_peeks == "": return
+    if num_peeks is None: return
     GM.set_flags(game_id=game_id, key='num_peaks_left', value=num_peeks-1)
     GM.update_peek_image(game_id=game_id)
     send_game_data(message)

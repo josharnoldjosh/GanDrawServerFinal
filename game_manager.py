@@ -214,7 +214,7 @@ class GameManager:
     @classmethod
     def read_flags(self, game_id, key):
         path = os.path.join('data/games/', game_id, 'flags.json')
-        if not os.path.exists(path): return ""
+        if not os.path.exists(path): return None
         with open(path, 'r') as file:
             flags = json.load(file)
             return flags[key]
@@ -225,6 +225,7 @@ class GameManager:
         Returns an Int.
         """
         path = os.path.join('data/games/', game_id, 'dialog.json')
+        if not os.path.exists(path): return 0
         current_turn_idx = -1;
         with open(path, 'r') as file:
             dialog = json.load(file)
