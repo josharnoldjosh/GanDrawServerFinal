@@ -46,10 +46,11 @@ class GenGames:
             if os.path.exists(target_path) and GenGames.can_make_game(idx, target_path):
 
                 if counter.count(target_image) < 5:
-                    print(idx, "has current count", counter.count(target_image), "regenerating...")
+                    # print(idx, "has current count", counter.count(target_image), "regenerating...")
                     GenGames.make_game(idx, target_path, label_path)
                 else:
-                    print(idx, "has count", counter.count(target_image), "no need to regenerate!")
+                    pass
+                    # print(idx, "has count", counter.count(target_image), "no need to regenerate!")
 
     @classmethod
     def target_label_paths(self, target_image):
@@ -74,7 +75,7 @@ class GenGames:
             if not os.path.isdir(os.path.join(os.getcwd(), 'data/games/', game)): continue
 
             if GenGames.game_original_target_name(game) == target_image_original_name and not GenGames.is_game_finished(game):
-                print("Cannot regen", idx, "because the game hasn't finished!")
+                # print("Cannot regen", idx, "because the game hasn't finished!")
                 return False          
         return True
 
@@ -86,7 +87,8 @@ class GenGames:
                 flags = json.load(file)
                 return flags['target_image_original_name']
         except Exception as error:
-            print(error)
+            pass
+            # print(error)
         return ""
 
     @classmethod
@@ -97,7 +99,8 @@ class GenGames:
                 flags = json.load(file)
                 return flags['finished']
         except Exception as error:
-            print(error)
+            pass
+            # print(error)
         return False
 
     @classmethod
@@ -145,7 +148,8 @@ class FinishedGames:
                 flags = json.load(file)
                 return flags['finished']
         except Exception as error:
-            print(error)
+            pass
+            # print(error)
         return False
 
     @classmethod
@@ -280,7 +284,8 @@ class GameManager:
         try:
             return int(re.findall(r'\d+', text)[0])
         except Exception as error:
-            print("\nError extracting int in 'update_peek_image'\n", error)
+            pass
+            # print("\nError extracting int in 'update_peek_image'\n", error)
             return 0
 
     @classmethod

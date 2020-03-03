@@ -50,8 +50,7 @@ def upload_drawer_images(game_id):
 @socketio.on('find_game')
 def find_game(message):
     GM.prune_finished_games()
-    result = GM.find_game(message['email'], message['user_type'])
-    print(result)
+    result = GM.find_game(message['email'], message['user_type'])    
     emit('go_to_game', {'href':result})
 
 @socketio.on('join_game')  
