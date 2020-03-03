@@ -72,14 +72,6 @@ class PaymentHelper:
         raise Exception("Failed to load flags.json")
 
     @classmethod
-    def compare_dates(self, file):        
-        unix_timestamp = int(file.readlines()[0].split(".")[0])
-        to_check = datetime.datetime.fromtimestamp(unix_timestamp)        
-        ideal = datetime.datetime(2020, 3, 2)
-        if utc.localize(to_check) > utc.localize(ideal): return True
-        return False
-
-    @classmethod
     def deserves_four_dollar_bonus(self, game_id):
         """
         Checks the date of a peek to see if its recent enough for the new payment scheme.
@@ -90,8 +82,11 @@ class PaymentHelper:
             to_read = os.path.join(os.getcwd(), 'data/finished_games/', game_id, json_file)             
 
             with open(to_read, 'r') as file:
-                if PaymentHelper.compare_dates(file):
-                    return True
+                unix_timestamp = int(file.readlines()[0].split(".")[0])
+                to_check = datetime.datetime.fromtimestamp(unix_timestamp)        
+                ideal = datetime.datetime(2020, 3, 2)
+                if utc.localize(to_check) > utc.localize(ideal): return True
+                return False
 
         except Exception as error:
             pass
