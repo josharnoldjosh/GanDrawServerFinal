@@ -81,7 +81,9 @@ class PaymentHelper:
             json_file = [x for x in os.listdir(path) if "peek" in x][0]         
             to_read = os.path.join(os.getcwd(), 'data/finished_games/', game_id, json_file)             
 
+            print("trying to read file")
             with open(to_read, 'r') as file:
+                print('reading...')
                 unix_timestamp = int(file.readlines()[0].split(".")[0])
                 to_check = datetime.datetime.fromtimestamp(unix_timestamp)        
                 ideal = datetime.datetime(2020, 3, 2)
