@@ -78,7 +78,11 @@ class PaymentHelper:
         """        
         try:
             path = os.path.join(os.getcwd(), 'data/finished_games/', game_id)    
-            json_file = [x for x in os.listdir(path) if "peek" in x][0]         
+            json_files = [x for x in os.listdir(path) if ".txt" in x]
+
+            if len(json_files) == 0: return False
+            json_file = json_files.pop()
+
             to_read = os.path.join(os.getcwd(), 'data/finished_games/', game_id, json_file)             
 
             with open(to_read, 'r') as file:                
