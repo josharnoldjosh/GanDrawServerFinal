@@ -236,13 +236,15 @@ class GameManager:
         
         def target_image(game_id):
             imgByteArr = io.BytesIO()
-            path = os.path.join(os.getcwd(), 'data/games/', game_id, 'target_image.jpg')        
+            path = os.path.join(os.getcwd(), 'data/games/', game_id, 'target_image.jpg')   
+            if not os.path.exists(path): return ""     
             im = Image.open(path)
             im.save(imgByteArr, format='PNG')        
             return 'data:image/png;base64,'+base64.b64encode(imgByteArr.getvalue()).decode('ascii')    
 
         def target_label(game_id):
             path = os.path.join('data/games/', game_id, 'target_label.png')
+            if not os.path.exists(path): return ""
             image = cv2.imread(path)            
             text_mask = PutingText2Mask(image)
             image = Image.fromarray(text_mask)
