@@ -4,6 +4,8 @@ Functions to calculate the payment of a user.
 
 import os
 import json
+import time
+import datetime
 
 class Payment:
 
@@ -56,6 +58,7 @@ class PaymentHelper:
             if "email" in turn.keys() and turn["email"] == email:
                 turns_contributed += 1 # Count how many turns the user contributed too
 
+        if num_turns == 0: return 0
         return (turns_contributed/num_turns)
 
     @classmethod
@@ -64,6 +67,33 @@ class PaymentHelper:
             data = json.load(file)
             return data['score']
         raise Exception("Failed to load flags.json")
+
+    @classmethod
+    def compare_dates(self, file):        
+        unix_timestamp = int(file.readlines()[0].split(".")[0])
+        to_check = datetime.datetime.fromtimestamp(unix_timestamp)        
+        ideal = datetime.datetime(2020, 3, 1)
+        if to_check > ideal: return True
+        return False
+
+    @classmethod
+    def deserves_four_dollar_bonus(self, game_id):
+        """
+        Checks the date of a peek to see if its recent enough for the new payment scheme.
+        """        
+        try:
+            path = os.path.join(os.getcwd(), 'data/finished_games/', game_id)    
+            json_file = [x for x in os.listdir(path) if "peek" in x][0]         
+            to_read = os.path.join(os.getcwd(), 'data/finished_games/', game_id, json_file)             
+
+            with open(to_read, 'r') as file:
+                if PaymentHelper.compare_dates(file):
+                    return True
+
+        except Exception as error:
+            pass
+
+        return False
 
     @classmethod
     def total_amount_earned(self, email):
@@ -75,7 +105,9 @@ class PaymentHelper:
             
             dialog = PaymentHelper.load_dialog(game_id)
 
-            if PaymentHelper.score(game_id) >= 3: # We're being generous with the bonus
+            if PaymentHelper.deserves_four_dollar_bonus(game_id):
+                total_amount += PaymentHelper.user_contribute_amount(dialog, email)*8
+            elif PaymentHelper.score(game_id) >= 3: # We're being generous with the bonus
                 total_amount += PaymentHelper.user_contribute_amount(dialog, email)*6
             else:
                 total_amount += PaymentHelper.user_contribute_amount(dialog, email)*5

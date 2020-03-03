@@ -31,26 +31,6 @@ GAUGAN2LABEL = {
 
     # 181: {"name": "wood", "color": np.array([66, 18, 120])}
 }
-
-# GAUGAN2LABEL = {
-#     211: {"name": "sky", "label": 156},
-#     102: {"name": "dirt", "label": 110},
-#     119: {"name": "mud", "label": 135},
-#     135: {"name": "sand", "label": 14},
-#     105: {"name": "clouds", "label": 105},
-#     148: {"name": "fog", "label": 119},
-#     166: {"name": "hill", "label": 126},
-#     139: {"name": "mountain", "label": 134},
-#     125: {"name": "river", "label": 147},
-#     108: {"name": "rock", "label": 149},
-#     187: {"name": "sea", "label": 154},
-#     159: {"name": "snow", "label": 158},
-#     154: {"name": "stone", "label": 161},
-#     199: {"name": "water", "label": 177},
-#     98: {"name": "bush", "label": 96},
-#     35: {"name": "flower", "label": 118}
-# }
-
 def convert_GAUGAN2MASK(gaugan_image):
     label_masks = np.zeros((gaugan_image.shape[0], gaugan_image.shape[1]), dtype='uint8')    
     for label, gaugan_info in GAUGAN2LABEL.items():
@@ -61,9 +41,14 @@ def convert_GAUGAN2MASK(gaugan_image):
 
 class Score:
     def calc(self, ground_truth_image, drawer_image):        
-        if ground_truth_image[0][0] == 1 or ground_truth_image.shape != drawer_image.shape:
-            print("SHAPES NOT EQUAL OR IMAGE DOES NOT EXIST")
-            return {"pixel_acc":0, "mean_acc":0, "mean_iou":0, "co_draw":0}
+        if ground_truth_image.shape != drawer_image.shape:
+            g_height, g_width = ground_truth_image.shape
+            d_height, d_width  = drawer_image.shape
+            height = min(d_height, g_height)
+            width = min(d_width, g_width)
+            ground_truth_image = ground_truth_image[0:width, 0:height]
+            drawer_image = drawer_image[0:height, 0:width]
+            
         co_draw_metric = self.gaugancodraw_eval_metrics(drawer_image, ground_truth_image, 182)        
         return {"pixel_acc":0, "mean_acc":0, "mean_iou":0, "co_draw":co_draw_metric}
 
