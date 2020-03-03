@@ -6,6 +6,9 @@ import os
 import json
 import time
 import datetime
+import pytz
+
+utc=pytz.UTC
 
 class Payment:
 
@@ -72,8 +75,8 @@ class PaymentHelper:
     def compare_dates(self, file):        
         unix_timestamp = int(file.readlines()[0].split(".")[0])
         to_check = datetime.datetime.fromtimestamp(unix_timestamp)        
-        ideal = datetime.datetime(2020, 3, 1)
-        if to_check > ideal: return True
+        ideal = datetime.datetime(2020, 3, 2)
+        if utc.localize(to_check) > utc.localize(ideal): return True
         return False
 
     @classmethod
@@ -92,6 +95,7 @@ class PaymentHelper:
 
         except Exception as error:
             pass
+            print(error)
 
         return False
 
