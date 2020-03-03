@@ -82,20 +82,18 @@ class PaymentHelper:
             to_read = os.path.join(os.getcwd(), 'data/finished_games/', game_id, json_file)             
 
             with open(to_read, 'r') as file:                
-                timestamp_str = file.readlines()[0]
-                print(timestamp_str)
-                if "." in timestamp_str: timestamp_str = timestamp_str.split(".")[0]
-                print(timestamp_str)
+                timestamp_str = file.readlines()[0]                
+                if "." in timestamp_str: timestamp_str = timestamp_str.split(".")[0]                
                 unix_timestamp = int(timestamp_str)
-                print(unix_timestamp)
                 to_check = datetime.datetime.fromtimestamp(unix_timestamp)        
                 ideal = datetime.datetime(2020, 3, 2)
-                if utc.localize(to_check) > utc.localize(ideal): return True
+                if utc.localize(to_check) > utc.localize(ideal):
+                    return True
                 return False
 
         except Exception as error:
             pass
-            print(error)
+            print(error, game_id)
 
         return False
 
