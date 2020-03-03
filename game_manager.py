@@ -286,6 +286,8 @@ class GameManager:
     @classmethod
     def get_most_recent_drawer_images(self, game_id):
         path = os.path.join(os.getcwd(), 'data/games/', game_id)
+        if not os.path.exists(path): return {'synthetic':'', semantic:''}
+        
         synthetic = [x for x in os.listdir(path) if 'synthetic_image' in x]
         if len(synthetic) < 1: return {'synthetic':'', 'semantic':''}
         synthetic = sorted(synthetic, key=lambda x: GameManager.extract_idx(x), reverse=False)
