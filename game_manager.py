@@ -410,7 +410,7 @@ class GameManager:
 
             return '/' + email + "/" + game_id + "/" + user_type
 
-        return "/error"
+        return "/done"
 
     @classmethod
     def add_connection(self, sid, game_id, user_type, email):

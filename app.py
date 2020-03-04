@@ -17,6 +17,10 @@ def root():
 def error():    
     return "😨 something may have gone terribly wrong, or terribly great, please try again!"   
 
+@app.route('/done')
+def done():    
+    return "There's no more data to be collected. Payments will be processed and sent out within the next week or two! Thanks for participating. 😁"       
+
 @app.route('/payment/<email>')
 def calculate_payment(email):
     total_earned = Payment.calculate(email)    
