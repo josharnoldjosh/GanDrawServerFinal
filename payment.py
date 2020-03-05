@@ -22,9 +22,16 @@ class Payment:
 
     @classmethod
     def all(self):
+        result = 0
         emails = PaymentHelper.all_emails()
         for email in emails:
-            print(Payment.calculate(email), Payment.num_games_contributed(email))
+            result += Payment.calculate(email)
+            #Payment.num_games_contributed(email),
+            print(f"${Payment.calculate(email):.2f}, {email}@ucdavis.edu")
+        print("---")
+        print(f"Total amount: ${result:.2f}")
+
+
 
 class PaymentHelper:
 
@@ -112,7 +119,10 @@ class PaymentHelper:
             dialog = PaymentHelper.load_dialog(game_id)
 
             if PaymentHelper.deserves_four_dollar_bonus(game_id):
-                total_amount += PaymentHelper.user_contribute_amount(dialog, email)*8
+                if PaymentHelper.score(game_id) >= 4.5:
+                    total_amount += PaymentHelper.user_contribute_amount(dialog, email)*9
+                else:
+                    total_amount += PaymentHelper.user_contribute_amount(dialog, email)*8
             elif PaymentHelper.score(game_id) >= 3: # We're being generous with the bonus
                 total_amount += PaymentHelper.user_contribute_amount(dialog, email)*6
             else:
@@ -147,8 +157,8 @@ class PaymentHelper:
             emails += PaymentHelper.emails_in_dialog(dialog)
         return set(emails)
 
-# if __name__ == '__main__':
-#     Payment.all()
+if __name__ == '__main__':
+    Payment.all()
 
 
 
